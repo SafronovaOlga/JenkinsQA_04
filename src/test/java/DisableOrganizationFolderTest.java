@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
-public class ChangeAppearanceToDefaultIconOrganizationFolderTest extends BaseTest {
+public class DisableOrganizationFolderTest extends BaseTest {
 
     private final String VALID_VALUE_FOR_NAME = "New organization folder";
 
@@ -22,21 +22,15 @@ public class ChangeAppearanceToDefaultIconOrganizationFolderTest extends BaseTes
         getDriver().findElement(By.id("yui-gen1-button")).click();
     }
     @Test
-    public void testChangeAppearanceToDefaultIconOrganizationFolder() throws InterruptedException {
+    public void testDisableOrganizationFolder() {
         preconditionCreateOrganizationFolder();
         getDriver().findElement(By.linkText(VALID_VALUE_FOR_NAME)).click();
-        getDriver().findElement(By.linkText("Configure")).click();
-        getDriver().findElement(By.xpath("//div[@class = 'tab config-section-activator config_appearance']")).click();
-        Thread.sleep(2000);
-        getDriver().findElement(By.xpath(
-                "//div[@class = 'jenkins-form-item has-help config_appearance active']" +
-                        "//div/select[@class = 'setting-input dropdownList']")).click();
-        getDriver().findElement(By.xpath(
-                "//div[@class='jenkins-form-item has-help config_appearance active']//div/select/option[@value = '0']"))
-                .click();
-        getDriver().findElement(By.id("yui-gen17-button")).click();
-        WebElement defaultIcon = getDriver().findElement(By.xpath("//img[@title = 'Folder']"));
-        Assert.assertTrue(defaultIcon.isDisplayed());
+        getDriver().findElement(By.id("yui-gen1-button")).click();
+        String expectedWarning = "This Organization Folder is currently disabled \nEnable";
+        WebElement actualWarning = getDriver().findElement(By.id("enable-project"));
+        Assert.assertEquals(actualWarning.getText(), expectedWarning);
+        WebElement disabledIcon = getDriver().findElement(By.xpath("//img[@class = 'icon-folder-disabled icon-xlg']"));
+        Assert.assertTrue(disabledIcon.isDisplayed());
         postconditionDeleteFolderAfterTest();
     }
 }

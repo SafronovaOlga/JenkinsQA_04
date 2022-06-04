@@ -3,6 +3,7 @@ package qa_java_beginners;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Ignore
 public class AnaLamaHW12Tests extends BaseTest {
 
     private final String BASE_URL = "http://www.99-bottles-of-beer.net/";
@@ -29,7 +31,6 @@ public class AnaLamaHW12Tests extends BaseTest {
 
         Assert.assertEquals(actualResult, expectedResult);
     }
-
     @Test
     public void testMLastLanguageMySQL() {
 
@@ -43,9 +44,7 @@ public class AnaLamaHW12Tests extends BaseTest {
         String actualResult = mLet.getText();
 
         Assert.assertEquals(actualResult, expectedResult);
-
     }
-
     @Test
     public void testTableColumnsTitles() {
 
@@ -61,7 +60,6 @@ public class AnaLamaHW12Tests extends BaseTest {
 
         Assert.assertEquals(tabTitlesActual.toString(), expectedResult.toString());
     }
-
     @Test
     public void testMathLanguageRow() {
         getDriver().get(BASE_URL);
@@ -74,7 +72,6 @@ public class AnaLamaHW12Tests extends BaseTest {
 
         Assert.assertEquals(actualResult, expectedResult);
     }
-
     @Test
     public void testNumericalLanguagesNames() {
         int expectedResult = 10;
@@ -86,5 +83,71 @@ public class AnaLamaHW12Tests extends BaseTest {
         int actualResult = numNames.size();
 
         Assert.assertEquals(actualResult, expectedResult);
+    }
+    @Test
+    public void testErrorMessageGuestBook() {
+
+        String expectedMessage = "Error: Error: Invalid security code.";
+        getDriver().get("http://www.99-bottles-of-beer.net/signv2.html");
+        getDriver().findElement(By.xpath("//input[@name='name']")).sendKeys("Mary");
+        getDriver().findElement(By.xpath("//input[@name='location']")).sendKeys("Toronto");
+        getDriver().findElement(By.xpath("//input[@name='email']")).sendKeys("Khgdvs87@nkj.com");
+        String code = "" + ((int) (Math.random() * 200) + 100);
+        getDriver().findElement(By.xpath("//input[@name='captcha']")).sendKeys(code);
+        getDriver().findElement(By.xpath("//textarea[@name='comment']")).sendKeys("kuku");
+        getDriver().findElement(By.xpath("//input[@type='submit']")).click();
+
+        String actualResult = getDriver().findElement(By.xpath("//div[@id='main']/p")).getText();
+
+        Assert.assertEquals(actualResult, expectedMessage);
+    }
+    @Test
+    public void testRedditBookMarkC(){
+        String expectedResult = "reddit.com: Log in";
+
+        getDriver().get(BASE_URL);
+        getDriver().findElement(By.xpath(BROWSE_LANG)).click();
+        getDriver().findElement(By.xpath("//a[@href='c.html']")).click();
+        getDriver().findElement(By.xpath("//a[@href='language-csharp-1614.html']")).click();
+        getDriver().findElement(By.xpath("//img[@src='./images/reddit.png']")).click();
+        String actualResult = getDriver().getTitle();
+
+        Assert.assertEquals(actualResult, expectedResult);
+    }
+    @Test
+    public void testShakespeareTopLanguage() {
+        String expectedResult1 = "99 Bottles of Beer | Top Rated";
+        String expectedResult2 = "99 Bottles of Beer | Top Rated Esoteric Languages";
+        String expectedResult3 = "99 Bottles of Beer | Top Hits";
+
+        getDriver().get(BASE_URL);
+        getDriver().findElement(By.linkText("Top Lists")).click();
+        String actResult1 = getDriver().getTitle();
+        WebElement shek = getDriver().findElement(
+                By.xpath("//a[contains(text(),'Shakespeare')]/parent::td/parent::tr"));
+        String[] shek1 = shek.getText().split(" ");
+        int topNum = Integer.parseInt(shek1[0].replace(".", ""));
+
+        getDriver().findElement(By.linkText("Top Rated Esoteric")).click();
+        String actResult2 = getDriver().getTitle();
+        WebElement shekEsot = getDriver().findElement(
+                By.xpath("//a[contains(text(),'Shakespeare')]/../.."));
+        String[] shekEsot1 = shekEsot.getText().split(" ");
+        int topEsotNum = Integer.parseInt(shekEsot1[0].replace(".", ""));
+
+        getDriver().findElement(By.linkText("Top Hits")).click();
+        String actResult3 = getDriver().getTitle();
+        WebElement shekTopHits = getDriver().findElement(
+                By.xpath("//a[contains(text(),'Shakespeare')]/../.."));
+        String[] shekTopHits1 = shekTopHits.getText().split(" ");
+        int topHitsNum = Integer.parseInt(shekTopHits1[0].replace(".", ""));
+
+
+        Assert.assertEquals(actResult1, expectedResult1);
+        Assert.assertTrue(topNum <= 20);
+        Assert.assertEquals(actResult2, expectedResult2);
+        Assert.assertTrue(topEsotNum <= 10);
+        Assert.assertEquals(actResult3, expectedResult3);
+        Assert.assertTrue(topHitsNum <= 6);
     }
 }

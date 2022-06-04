@@ -2,9 +2,11 @@ package qa_java_beginners;
 
 import org.openqa.selenium.By;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
+@Ignore
 public class Song99BottlesArailymLessonTest extends BaseTest {
 
     @Test
@@ -131,27 +133,12 @@ public class Song99BottlesArailymLessonTest extends BaseTest {
             int index = i + 1;
             pText[i] = getDriver().findElement(By.xpath("//body/div[@id='wrap']/div[@id='main']/p[" + index + "]")).getText();
         }
-
-
         String actualResult = "";
         for(int i = 0; i <pText.length; i++){
             actualResult = actualResult + pText[i];
         }
 
-        System.out.println(actualResult);
-
         Assert.assertEquals(actualResult, expectedResult);
-
-
-
-
-
-//        String songText = text.getText();
-//        System.out.println(songText);
-
-
-
-
     }
 
 

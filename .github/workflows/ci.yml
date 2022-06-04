@@ -21,17 +21,35 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Сache maven repository
-        uses: actions/cache@v1
+      - name: Сache maven
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Prepare Jenkins data
+        run: |
+          cat /home/runner/work/JenkinsQA_04/JenkinsQA_04/jenkins_data/jenkins_backup0* > /home/runner/work/JenkinsQA_04/JenkinsQA_04/jenkins_backup.tar
+          md5sum /home/runner/work/JenkinsQA_04/JenkinsQA_04/jenkins_backup.tar
+
+      - name: Extract Jenkins data and set permission
+        run: |
+          tar -xzvf ./jenkins_backup.tar
+          chmod -R 777 ./jenkins_backup/var/jenkins_home
+
+      - name: Docker login
+        run: echo ${{ secrets.DOCKER_PAS }} | docker login --username ${{ secrets.DOCKER_USER }} --password-stdin
+
+      - name: Docker start
+        run: docker run --rm --detach -p 8080:8080 -p 50000:50000 -v /home/runner/work/JenkinsQA_04/JenkinsQA_04/jenkins_backup/var/jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk11
+
+      - name: Wait for the Jenkins
+        run: ./.github/wait-for-jenkins.sh
 
       - name: Maven test
-        id: test
         run: mvn test
         env:
           CHROME_OPTIONS: --disable-gpu;--no-sandbox;--disable-dev-shm-usage;--headless;--window-size=1920,1080
+          APP_OPTIONS: port=8080;admin.username=${{ secrets.ADMIN_USER }};admin.password=${{ secrets.ADMIN_PAS }}
           CI_RUN: true

@@ -130,7 +130,6 @@ public class PipelineAndSnippetGeneratorTest extends BaseTest {
         createNewPipeline("First Pipeline", "First test");
     }
 
-    @Ignore
 
     @AfterMethod
     protected void setDown() {

@@ -61,7 +61,6 @@ public class FabrianaCreateNewUserOnManageJenkinsTest extends BaseTest {
         return getDriver().findElement(By.xpath("//div[@class='jenkins-app-bar']//h1[text()='Users']"));
     }
 
-
     @Test
     public void testCreateNewUserWithValidData_TC_107_001() {
         dashboardMyViews().click();

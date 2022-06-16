@@ -70,7 +70,6 @@ public class _MultibranchPipelineTest extends BaseTest {
     public void testScanResultAddLink() {
         WebElement multibranchJob = waitPresenceOfElement(getWait5(), By.xpath(ITEM_LOCATOR));
         multibranchJob.click();
-        WebElement element = getWait5().until(ExpectedConditions.visibilityOfElementLocated(By.xpath(ITEM_LOCATOR)));
 
         WebElement configureProject = waitPresenceOfElement(getWait5(), By.xpath("//a[@href='./configure']"));
         configureProject.click();

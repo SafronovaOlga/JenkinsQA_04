@@ -15,9 +15,50 @@ public class _MultibranchPipelineTest extends BaseTest {
     private static final String ITEM_LOCATOR = String.format("//tr[@id='job_%s']//a[@href='job/%s/']", PROJECT_NAME, PROJECT_NAME);
     private static final String URL_GITHUB = "https://github.com/GitForProjects/javaJenkins";
 
+    private void createEmptyJob() {
+        WebElement newItemButton = waitPresenceOfElement(getWait5(), By.xpath("//span[@class='task-link-text' and contains (text(), 'New Item')]"));
+        newItemButton.click();
+        findElementId("name").sendKeys(PROJECT_NAME);
+        findElementXpath("//span[@class='label' and contains(text(), 'Multibranch Pipeline')]").click();
+        findElementId("ok-button").click();
+        clickSaveButton();
+    }
+
+    private void goToDashboard() {
+        findElementXpath("//ul[@id='breadcrumbs']//a[contains(text(), 'Dashboard')]").click();
+    }
+
+    private void clickSaveButton() {
+        findElementId("yui-gen8-button").click();
+    }
+
+    private WebElement findElement(By by) {
+        return getDriver().findElement(by);
+    }
+
+    private List<WebElement> findElements(By by) {
+        return getDriver().findElements(by);
+    }
+
+    private WebElement findElementXpath(String xPath) {
+        return findElement(By.xpath(xPath));
+    }
+
+    private WebElement findElementId(String id) {
+        return findElement(By.id(id));
+    }
+
+    private WebElement waitPresenceOfElement(WebDriverWait wait, By by) {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    }
+
+    private void waitTextToBePresentInElement(WebDriverWait wait, WebElement element, String text) {
+        wait.until(ExpectedConditions.textToBePresentInElement(element, text));
+    }
+
     @Test
-    public void testCreateNewItemMultibranch() {
-        createNewMultibranchJob();
+    public void testCreateNewJob() {
+        createEmptyJob();
         goToDashboard();
         String itemListLocator = String.format("//tr[@id='job_%s']", PROJECT_NAME);
         int itemList = findElements(By.xpath(itemListLocator)).size();
@@ -25,10 +66,11 @@ public class _MultibranchPipelineTest extends BaseTest {
         Assert.assertEquals(itemList, 1);
     }
 
-    @Test
-    public void testScanResult() {
+    @Test (dependsOnMethods = "testCreateNewJob")
+    public void testScanResultAddLink() {
         WebElement multibranchJob = waitPresenceOfElement(getWait5(), By.xpath(ITEM_LOCATOR));
         multibranchJob.click();
+        WebElement element = getWait5().until(ExpectedConditions.visibilityOfElementLocated(By.xpath(ITEM_LOCATOR)));
 
         WebElement configureProject = waitPresenceOfElement(getWait5(), By.xpath("//a[@href='./configure']"));
         configureProject.click();
@@ -100,46 +142,5 @@ public class _MultibranchPipelineTest extends BaseTest {
                 waitPresenceOfElement(
                         new WebDriverWait(getDriver(), 30),
                         By.xpath("//tbody[@class='tobsTable-body']//td[@class='stage-cell stage-cell-0 SUCCESS']")));
-    }
-
-    private void createNewMultibranchJob() {
-        WebElement newItemButton = waitPresenceOfElement(getWait5(), By.xpath("//span[@class='task-link-text' and contains (text(), 'New Item')]"));
-        newItemButton.click();
-        findElementId("name").sendKeys(PROJECT_NAME);
-        findElementXpath("//span[@class='label' and contains(text(), 'Multibranch Pipeline')]").click();
-        findElementId("ok-button").click();
-        clickSaveButton();
-    }
-
-    private void goToDashboard() {
-        getDriver().findElement(By.xpath("//ul[@id='breadcrumbs']//a[contains(text(), 'Dashboard')]")).click();
-    }
-
-    private void clickSaveButton() {
-        findElementId("yui-gen8-button").click();
-    }
-
-    private WebElement findElement(By by) {
-        return getDriver().findElement(by);
-    }
-
-    private List<WebElement> findElements(By by) {
-        return getDriver().findElements(by);
-    }
-
-    private WebElement findElementXpath(String xPath) {
-        return findElement(By.xpath(xPath));
-    }
-
-    private WebElement findElementId(String id) {
-        return findElement(By.id(id));
-    }
-
-    private WebElement waitPresenceOfElement(WebDriverWait wait, By by) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
-    }
-
-    private void waitTextToBePresentInElement(WebDriverWait wait, WebElement element, String text) {
-        wait.until(ExpectedConditions.textToBePresentInElement(element, text));
     }
 }

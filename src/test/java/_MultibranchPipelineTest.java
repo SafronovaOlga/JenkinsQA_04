@@ -15,23 +15,6 @@ public class _MultibranchPipelineTest extends BaseTest {
     private static final String ITEM_LOCATOR = String.format("//tr[@id='job_%s']//a[@href='job/%s/']", PROJECT_NAME, PROJECT_NAME);
     private static final String URL_GITHUB = "https://github.com/GitForProjects/javaJenkins";
 
-    private void createEmptyJob() {
-        WebElement newItemButton = waitPresenceOfElement(getWait5(), By.xpath("//span[@class='task-link-text' and contains (text(), 'New Item')]"));
-        newItemButton.click();
-        findElementId("name").sendKeys(PROJECT_NAME);
-        findElementXpath("//span[@class='label' and contains(text(), 'Multibranch Pipeline')]").click();
-        findElementId("ok-button").click();
-        clickSaveButton();
-    }
-
-    private void goToDashboard() {
-        findElementXpath("//ul[@id='breadcrumbs']//a[contains(text(), 'Dashboard')]").click();
-    }
-
-    private void clickSaveButton() {
-        findElementId("yui-gen8-button").click();
-    }
-
     private WebElement findElement(By by) {
         return getDriver().findElement(by);
     }
@@ -54,6 +37,23 @@ public class _MultibranchPipelineTest extends BaseTest {
 
     private void waitTextToBePresentInElement(WebDriverWait wait, WebElement element, String text) {
         wait.until(ExpectedConditions.textToBePresentInElement(element, text));
+    }
+
+    private void clickSaveButton() {
+        findElementId("yui-gen8-button").click();
+    }
+
+    private void goToDashboard() {
+        findElementXpath("//ul[@id='breadcrumbs']//a[contains(text(), 'Dashboard')]").click();
+    }
+
+    private void createEmptyJob() {
+        WebElement newItemButton = waitPresenceOfElement(getWait5(), By.xpath("//span[@class='task-link-text' and contains (text(), 'New Item')]"));
+        newItemButton.click();
+        findElementId("name").sendKeys(PROJECT_NAME);
+        findElementXpath("//span[@class='label' and contains(text(), 'Multibranch Pipeline')]").click();
+        findElementId("ok-button").click();
+        clickSaveButton();
     }
 
     @Test

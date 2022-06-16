@@ -152,6 +152,30 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
         }
     }
 
+    @Test
+    public void test () {
+
+        final String tooltipEnable = "Not built";
+        final String messageDisable = "This project is currently disabled";
+        final String tooltipDisable = "Disabled";
+
+        String status =getDriver().findElement(
+            By.xpath("//tr[@id='job_".concat(PROJECT_NAME).concat("']//span/span/node()"))).getAttribute("tooltip");
+
+        getDriver().findElement(PROJECT_ON_DAHBOARD).click();
+        getDriver().findElement(By.xpath("//button[@type='submit']")).click();
+ //       WebElement warning = getDriver().findElement(By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]"));
+
+
+        Assert.assertTrue(getDriver().findElement(By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]")).isDisplayed());
+
+
+
+
+
+    }
+
+
     @Test(dependsOnMethods = "TC_043_006_testMultiConfigurationProjectRenameUsingInvalidName")
     public void TC_041_004_testDeleteMultiConfigurationProject() {
         returnHomePage();

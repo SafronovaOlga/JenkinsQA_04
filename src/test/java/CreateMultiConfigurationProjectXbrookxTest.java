@@ -4,7 +4,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 import java.util.List;
@@ -47,7 +46,6 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
         Assert.assertTrue(getListProjects().contains(PROJECT_NAME));
     }
 
-    @Ignore
     @Test
     public void TC_041_005_testCheckSubMenuConfigureAfterCreatingProject() {
         String expectedResultDiscardOldBuilds = "Help for feature: Discard old builds";
@@ -152,7 +150,27 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
         }
     }
 
-    @Test(dependsOnMethods = "TC_043_006_testMultiConfigurationProjectRenameUsingInvalidName")
+    @Test
+    public void testTC_045_004MultiConfigurationProjectStatusDisableProject() {
+        final  String expectedResult = "This project is currently disabled";
+
+        getDriver().findElement(PROJECT_ON_DAHBOARD).click();
+        getDriver().findElement(By.id("yui-gen1")).click();
+        String actualResult = getDriver().findElement(By.id("enable-project")).getText().trim();
+
+
+        System.out.println(actualResult);
+
+
+
+        Assert.assertEquals(actualResult, expectedResult);
+
+
+
+
+    }
+
+    @Test
     public void TC_041_004_testDeleteMultiConfigurationProject() {
         returnHomePage();
         Assert.assertTrue(getListProjects().contains(PROJECT_NAME));

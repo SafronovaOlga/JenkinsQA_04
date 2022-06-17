@@ -82,6 +82,7 @@ public class CopyDataFromExistingItemIntoNewOneTest extends BaseTest {
         homePage();
     }
 
+    @Ignore
     @Test
     public void testCopyDataFromExistingItemPositive() {
         homePage();

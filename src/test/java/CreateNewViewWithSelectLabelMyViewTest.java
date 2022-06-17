@@ -26,7 +26,7 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
     public void deleteCreatedView() {
         getDriver().findElement(By.xpath("//li/a[text()='Dashboard']")).click();
         getDriver().findElement(
-                        By.xpath("//div[@id='projectstatus-tabBar']//a[contains(@href, '/view')]"))
+                        By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]"))
                 .click();
         getDriver().findElement(By.xpath("//a[@href='delete']")).click();
         getDriver().findElement(By.id("yui-gen1-button")).click();

@@ -1,7 +1,5 @@
 import org.openqa.selenium.By;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
@@ -21,16 +19,16 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
                         .findElement(By.xpath("//ul[@id='breadcrumbs']//a[contains(@href, '/view')]"))
                         .getText()
         );
+
+        deleteCreatedView();
     }
 
-    @Ignore
-    //@AfterMethod
     public void deleteCreatedView() {
-        getDriver().findElement(By.linkText("Dashboard")).click();
+        getDriver().findElement(By.xpath("//li/a[text()='Dashboard']")).click();
         getDriver().findElement(
                         By.xpath("//div[@id='projectstatus-tabBar']//a[contains(@href, '/view')]"))
                 .click();
         getDriver().findElement(By.xpath("//a[@href='delete']")).click();
-        getDriver().findElement(By.id("yui-gen1")).click();
+        getDriver().findElement(By.id("yui-gen1-button")).click();
     }
 }

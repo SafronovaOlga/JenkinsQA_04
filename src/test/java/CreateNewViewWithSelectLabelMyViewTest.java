@@ -25,8 +25,8 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
     private void deleteCreatedView() throws InterruptedException {
         getDriver().findElement(By.xpath("//li/a[text()='Dashboard']")).click();
         Thread.sleep(5000);
-        getWait20().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.id("projectstatus-tabBar")));
-        getDriver().findElement(By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]")).click();
+        getWait20().until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]"))).click();
+
         getDriver().findElement(By.xpath("//a[@href='delete']")).click();
         getDriver().findElement(By.id("yui-gen1-button")).click();
     }

@@ -1,4 +1,5 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import runner.BaseTest;
@@ -15,9 +16,7 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
 
         Assert.assertEquals(
                 NAME_OF_VIEW,
-                getDriver()
-                        .findElement(By.xpath("//ul[@id='breadcrumbs']//a[contains(@href, '/view')]"))
-                        .getText()
+                getDriver().findElement(By.xpath("//ul[@id='breadcrumbs']//a[contains(@href, '/view')]")).getText()
         );
 
         deleteCreatedView();
@@ -25,9 +24,8 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
 
     public void deleteCreatedView() {
         getDriver().findElement(By.xpath("//li/a[text()='Dashboard']")).click();
-        getDriver().findElement(
-                        By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]"))
-                .click();
+        getWait20().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.id("projectstatus-tabBar")));
+        getDriver().findElement(By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]")).click();
         getDriver().findElement(By.xpath("//a[@href='delete']")).click();
         getDriver().findElement(By.id("yui-gen1-button")).click();
     }

@@ -8,7 +8,7 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
     final String NAME_OF_VIEW = "My new view";
 
     @Test
-    public void testCreateNewView() {
+    public void testCreateNewView() throws InterruptedException{
         getDriver().findElement(By.xpath("//a[@title='New View']")).click();
         getDriver().findElement(By.id("name")).sendKeys(NAME_OF_VIEW);
         getDriver().findElement(By.xpath("//label[text()='My View']")).click();
@@ -22,8 +22,9 @@ public class CreateNewViewWithSelectLabelMyViewTest extends BaseTest {
         deleteCreatedView();
     }
 
-    public void deleteCreatedView() {
+    private void deleteCreatedView() throws InterruptedException {
         getDriver().findElement(By.xpath("//li/a[text()='Dashboard']")).click();
+        Thread.sleep(5000);
         getWait20().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.id("projectstatus-tabBar")));
         getDriver().findElement(By.xpath("//div[@class='tab']/a[contains(@href, '/view/')]")).click();
         getDriver().findElement(By.xpath("//a[@href='delete']")).click();

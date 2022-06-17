@@ -5,7 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
-public class FabrianaDescriptionOnMyViewsTests extends BaseTest {
+public class DescriptionOnMyViewsTests extends BaseTest {
 
     private WebElement dashboardMyViews() {
         return getDriver().findElement(By.xpath("//a[contains(@href, 'me/my-views')]"));

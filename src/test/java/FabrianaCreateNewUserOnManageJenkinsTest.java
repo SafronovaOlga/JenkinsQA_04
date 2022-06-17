@@ -75,7 +75,7 @@ public class FabrianaCreateNewUserOnManageJenkinsTest extends BaseTest {
         fieldEmail().sendKeys(randomEmail());
         buttonCreateUserDatabase().click();
 
-        getWait20().until(ExpectedConditions.visibilityOf(titleTableUsers()));
+       // getWait20().until(ExpectedConditions.visibilityOf(titleTableUsers()));
 
         List<WebElement> users = getDriver().findElements(By.xpath(trTableUsers));
         List<String> actualResult = new ArrayList<>();

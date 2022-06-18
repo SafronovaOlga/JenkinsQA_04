@@ -23,7 +23,7 @@ public class _MultiConfigurationProjectTest extends BaseTest {
 
     Actions action = new Actions(getDriver());
     action.moveToElement(getDriver().findElement(
-            By.xpath("//a[@href='job/" + name + "/']"))).click().build().perform();
+            By.xpath("//table[@id='projectstatus']//a[normalize-space()='" + name + "']"))).click().build().perform();
     getDriver().findElement(By.xpath("//span[text()='Delete Multi-configuration project']")).click();
     getDriver().switchTo().alert().accept();
   }

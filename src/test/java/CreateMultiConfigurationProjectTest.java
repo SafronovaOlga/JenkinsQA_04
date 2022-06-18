@@ -3,14 +3,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CreateMultiConfigurationProjectTest extends BaseTest {
-    private final String NAME_FOLDER = "Neeew Multi configuration project";
-    private final By PROJECT_ON_DAHBOARD = By.xpath("//table[@id='projectstatus']//a[normalize-space(.)='" + NAME_FOLDER + "']");
+    private final String NAME_FOLDER = "Neeew Multi - configuration project";
+    private final By PROJECT_ON_DAHBOARD = By.xpath("//table[@id='projectstatus']//a[normalize-space()='" + NAME_FOLDER + "']");
 
     private void createMultiConfigFolder(String name) {
         getDriver().findElement(By.linkText("New Item")).click();
@@ -31,21 +32,14 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
                 .stream().map(WebElement::getText).collect(Collectors.toList());
     }
 
-    protected void deleteFolder(String name) {
+    protected void deleteFolder(String name){
+
         Actions action = new Actions(getDriver());
         action.moveToElement(getDriver().findElement(
-                By.xpath("//a[@href='job/" + name + "/']"))).click().build().perform();
+                By.xpath("//table[@id='projectstatus']//a[normalize-space()='" + name + "']"))).click().build().perform();
         getDriver().findElement(By.xpath("//span[text()='Delete Multi-configuration project']")).click();
         getDriver().switchTo().alert().accept();
     }
-
-//    @Test
-//    public void testCreateMultiConfigurationProject() {
-//        createMultiConfigFolder(NAME_FOLDER);
-//        returnToMainPage();
-//
-//        Assert.assertTrue(getListProjects().contains(NAME_FOLDER));
-//    }
 
     @Test
     public void testCheckSubMenuConfigureAfterCreatingProject() {
@@ -77,7 +71,6 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
                 "Note that Jenkins does not discard items immediately when this configuration is updated, " +
                 "or as soon as any of the configured values are exceeded; these rules are evaluated " +
                 "each time a build of this project completes.";
-        String expectedResultMessage = "Saved";
 
         createMultiConfigFolder(NAME_FOLDER);
         returnToMainPage();
@@ -114,15 +107,11 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
 
         actions.moveToElement(getDriver().findElement(By.xpath("//span[@name='Apply']"))).click().build().perform();
 
-        WebElement applyMessage = getDriver().findElement(By.xpath("//div[@id='notification-bar']/span"));
-
-        Assert.assertEquals(applyMessage.getText(), expectedResultMessage);
+        Assert.assertEquals(getDriver().findElement(
+                By.xpath("//div[@id='notification-bar']/span")).getText(), "Saved");
 
         getWait20().until(ExpectedConditions.invisibilityOfElementLocated(By.linkText("notification-bar")));
-
         getDriver().findElement(By.linkText("Dashboard")).click();
-
- //       returnToMainPage();
 
         deleteFolder(NAME_FOLDER);
     }
@@ -158,9 +147,11 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
             Assert.assertEquals(actualResult, expectedResult);
 
             getDriver().navigate().back();
-
-            deleteFolder(NAME_FOLDER);
         }
+
+        getDriver().findElement(By.linkText("Dashboard")).click();
+
+        deleteFolder(NAME_FOLDER);
     }
 
     @Test
@@ -170,14 +161,14 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
         final String tooltipEnable = "Not built";
         final String tooltipDisable = "Disabled";
 
+        createMultiConfigFolder(NAME_FOLDER);
+        returnToMainPage();
+
         String status = getDriver().findElement(STATUS_TOOLTIP_DAHBOARD).getAttribute("tooltip");
         Assert.assertEquals(status, tooltipEnable);
 
         getDriver().findElement(PROJECT_ON_DAHBOARD).click();
         getDriver().findElement(By.xpath("//button[@type='submit']")).click();
-
-        WebElement warning = getDriver().findElement(By.xpath("//div[@class='warning']/form[@id='enable-project']"));
-        System.out.println(warning.getText());
 
         Assert.assertTrue(getDriver().findElement(
                 By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]")).isDisplayed());
@@ -187,11 +178,13 @@ public class CreateMultiConfigurationProjectTest extends BaseTest {
         status = getDriver().findElement(STATUS_TOOLTIP_DAHBOARD).getAttribute("tooltip");;
 
         Assert.assertEquals(status, tooltipDisable);
+
+        deleteFolder(NAME_FOLDER);
     }
 
+    @Ignore
     @Test
     public void TC_041_004_testDeleteMultiConfigurationProject() {
-
         createMultiConfigFolder(NAME_FOLDER);
         returnToMainPage();
 

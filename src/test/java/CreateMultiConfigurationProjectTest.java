@@ -2,27 +2,25 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
-    private final String PROJECT_NAME = "Neeew Multi configuration project";
-    private final By PROJECT_ON_DAHBOARD = By.xpath("//table[@id='projectstatus']//a[normalize-space(.)='" + PROJECT_NAME + "']");
+public class CreateMultiConfigurationProjectTest extends BaseTest {
+    private final String NAME_FOLDER = "Neeew Multi configuration project";
+    private final By PROJECT_ON_DAHBOARD = By.xpath("//table[@id='projectstatus']//a[normalize-space(.)='" + NAME_FOLDER + "']");
 
-    private void createMultiConfigurationProject(String projectName) {
+    private void createMultiConfigFolder(String name) {
         getDriver().findElement(By.linkText("New Item")).click();
-        getDriver().findElement(By.id("name")).sendKeys(projectName);
-        getDriver().findElement(By.xpath("//span[text()='Multi-configuration project']")).click();
-        getDriver().findElement(By.id("ok-button")).click();
-        getDriver().findElement(By.xpath("//button[normalize-space()='Save']")).click();
+        WebElement itemName = getDriver().findElement(By.id("name"));
+        itemName.sendKeys(name);
+        getDriver().findElement(By.xpath("//div[@id='j-add-item-type-standalone-projects']//li[3]")).click();
+        getDriver().findElement(By.xpath("//button[@id='ok-button']")).click();
     }
 
-    private void returnHomePage() {
+    private void returnToMainPage() {
         getDriver().findElement(By.id("jenkins-home-link")).click();
     }
 
@@ -33,23 +31,24 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
                 .stream().map(WebElement::getText).collect(Collectors.toList());
     }
 
-    public void deleteMultiConfigurationProject() {
-        getDriver().findElement(PROJECT_ON_DAHBOARD).click();
-        getDriver().findElement(By.xpath("//a[contains(@class, 'confirmation-link')] ")).click();
+    protected void deleteFolder(String name) {
+        Actions action = new Actions(getDriver());
+        action.moveToElement(getDriver().findElement(
+                By.xpath("//a[@href='job/" + name + "/']"))).click().build().perform();
+        getDriver().findElement(By.xpath("//span[text()='Delete Multi-configuration project']")).click();
         getDriver().switchTo().alert().accept();
     }
 
-    @Test
-    public void TC_041_003_testCreateMultiConfigurationProject() {
-        createMultiConfigurationProject(PROJECT_NAME);
-        returnHomePage();
+//    @Test
+//    public void testCreateMultiConfigurationProject() {
+//        createMultiConfigFolder(NAME_FOLDER);
+//        returnToMainPage();
+//
+//        Assert.assertTrue(getListProjects().contains(NAME_FOLDER));
+//    }
 
-        Assert.assertTrue(getListProjects().contains(PROJECT_NAME));
-    }
-
-    @Ignore
     @Test
-    public void TC_041_005_testCheckSubMenuConfigureAfterCreatingProject() {
+    public void testCheckSubMenuConfigureAfterCreatingProject() {
         String expectedResultDiscardOldBuilds = "Help for feature: Discard old builds";
         String expectedResult1 = "This determines when, if ever, build records for this project should be discarded. " +
                 "Build records include the console output, archived artifacts, and any other metadata related " +
@@ -79,6 +78,9 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
                 "or as soon as any of the configured values are exceeded; these rules are evaluated " +
                 "each time a build of this project completes.";
         String expectedResultMessage = "Saved";
+
+        createMultiConfigFolder(NAME_FOLDER);
+        returnToMainPage();
 
         Actions actions = new Actions(getDriver());
         actions.moveToElement(getDriver().findElement(PROJECT_ON_DAHBOARD)).perform();
@@ -116,15 +118,22 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
 
         Assert.assertEquals(applyMessage.getText(), expectedResultMessage);
 
-        WebDriverWait wait = new WebDriverWait(getDriver(), 9);
+        getWait20().until(ExpectedConditions.invisibilityOfElementLocated(By.linkText("notification-bar")));
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("notification-bar")));
+        getDriver().findElement(By.linkText("Dashboard")).click();
+
+ //       returnToMainPage();
+
+        deleteFolder(NAME_FOLDER);
     }
 
     @Test
-    public void TC_043_006_testMultiConfigurationProjectRenameUsingInvalidName() {
+    public void testMultiConfigurationProjectRenameUsingInvalidName() {
         String[] invalidName =
                 new String[]{"!", "@", "#", "$", "%", "^", "&", "*", ":", ";", "\\", "/", "|", "<", ">", "?", "", " "};
+
+        createMultiConfigFolder(NAME_FOLDER);
+        returnToMainPage();
 
         getDriver().findElement(PROJECT_ON_DAHBOARD).click();
         getDriver().findElement(By.linkText("Rename")).click();
@@ -134,13 +143,13 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
             getDriver().findElement(By.name("newName")).sendKeys(unsafeChar);
             getDriver().findElement(By.id("yui-gen1-button")).click();
             String expectedResult = "‘" + unsafeChar + "’ is an unsafe character";
-            if ("&" == unsafeChar) {
+            if ("&".equals(unsafeChar)) {
                 expectedResult = "‘&amp;’ is an unsafe character";
-            } else if (unsafeChar == "<") {
+            } else if (unsafeChar.equals("<")) {
                 expectedResult = "‘&lt;’ is an unsafe character";
-            } else if (unsafeChar == ">") {
+            } else if (unsafeChar.equals(">")) {
                 expectedResult = "‘&gt;’ is an unsafe character";
-            } else if (unsafeChar == "" || unsafeChar == " ") {
+            } else if (unsafeChar.equals("") || unsafeChar.equals(" ")) {
                 expectedResult = "No name is specified";
             }
 
@@ -149,40 +158,47 @@ public class CreateMultiConfigurationProjectXbrookxTest extends BaseTest {
             Assert.assertEquals(actualResult, expectedResult);
 
             getDriver().navigate().back();
+
+            deleteFolder(NAME_FOLDER);
         }
     }
 
     @Test
-    public void test () {
+    public void testMultiConfigurationProjectStatusDisableProject () {
+        final By STATUS_TOOLTIP_DAHBOARD = By.xpath("//tr[@id='job_".concat(NAME_FOLDER).concat("']//span/span/node()"));
 
         final String tooltipEnable = "Not built";
-        final String messageDisable = "This project is currently disabled";
         final String tooltipDisable = "Disabled";
 
-        String status =getDriver().findElement(
-            By.xpath("//tr[@id='job_".concat(PROJECT_NAME).concat("']//span/span/node()"))).getAttribute("tooltip");
+        String status = getDriver().findElement(STATUS_TOOLTIP_DAHBOARD).getAttribute("tooltip");
+        Assert.assertEquals(status, tooltipEnable);
 
         getDriver().findElement(PROJECT_ON_DAHBOARD).click();
         getDriver().findElement(By.xpath("//button[@type='submit']")).click();
- //       WebElement warning = getDriver().findElement(By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]"));
 
+        WebElement warning = getDriver().findElement(By.xpath("//div[@class='warning']/form[@id='enable-project']"));
+        System.out.println(warning.getText());
 
-        Assert.assertTrue(getDriver().findElement(By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]")).isDisplayed());
+        Assert.assertTrue(getDriver().findElement(
+                By.xpath("//div[@class='warning']/form[contains(text(), 'This project is currently disabled')]")).isDisplayed());
 
+        returnToMainPage();
 
+        status = getDriver().findElement(STATUS_TOOLTIP_DAHBOARD).getAttribute("tooltip");;
 
-
-
+        Assert.assertEquals(status, tooltipDisable);
     }
 
-
-    @Test(dependsOnMethods = "TC_043_006_testMultiConfigurationProjectRenameUsingInvalidName")
+    @Test
     public void TC_041_004_testDeleteMultiConfigurationProject() {
-        returnHomePage();
-        Assert.assertTrue(getListProjects().contains(PROJECT_NAME));
-        deleteMultiConfigurationProject();
+
+        createMultiConfigFolder(NAME_FOLDER);
+        returnToMainPage();
+
+        Assert.assertTrue(getListProjects().contains(NAME_FOLDER));
+        deleteFolder(NAME_FOLDER);
         getDriver().findElement(By.xpath("//a[@id='jenkins-home-link']")).click();
 
-        Assert.assertFalse(getListProjects().contains(PROJECT_NAME));
+        Assert.assertFalse(getListProjects().contains(NAME_FOLDER));
     }
 }

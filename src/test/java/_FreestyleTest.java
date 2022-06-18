@@ -1,8 +1,10 @@
 import org.apache.commons.lang3.RandomStringUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -89,6 +91,15 @@ public class _FreestyleTest extends BaseTest {
         return getDriver().findElement(By.xpath(
                 String.format("//tr[@id='job_%s']/td/div/span/*[@tooltip]",
                         NAME)));
+    }
+
+    public void deleteItem() {
+        getDriver().findElement(By.linkText(NAME)).click();
+        getDriver().findElement(By.linkText("Delete Project")).click();
+
+        getWait5().until(ExpectedConditions.alertIsPresent());
+        Alert alert = getDriver().switchTo().alert();
+        alert.accept();
     }
 
     @Test(dataProvider = "data")
@@ -207,4 +218,21 @@ public class _FreestyleTest extends BaseTest {
 
         deleteProject();
     }
+
+    @Test
+    public void testFreestyleProjectAddDescription() {
+        createFreestyleProjectRandomName();
+
+        getDriver().findElement(By.name("description")).sendKeys("Test Add Description RDV");
+
+        saveButton();
+
+        String actualDescription = getDriver().findElement(
+                By.xpath("//div[@id='description']/div[1]")).getText();
+
+        deleteItem();
+
+        Assert.assertEquals(actualDescription, "Test Add Description RDV");
+    }
+
 }

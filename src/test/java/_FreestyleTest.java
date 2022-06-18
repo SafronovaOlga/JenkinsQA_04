@@ -1,4 +1,5 @@
 import org.apache.commons.lang3.RandomStringUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -89,6 +90,21 @@ public class _FreestyleTest extends BaseTest {
         return getDriver().findElement(By.xpath(
                 String.format("//tr[@id='job_%s']/td/div/span/*[@tooltip]",
                         NAME)));
+    }
+
+    private void createDisabledFreeStyleProject(){
+        createFreestyleProjectRandomName();
+
+        getDriver().findElement(By.name("disable")).click();
+        getDriver().findElement(By.xpath("//button[@type='submit']")).click();
+    }
+
+    private void deleteItem() {
+        getDriver().findElement(By.linkText(NAME)).click();
+        getDriver().findElement(By.linkText("Delete Project")).click();
+        getWait20().until(ExpectedConditions.alertIsPresent());
+        Alert alert = getDriver().switchTo().alert();
+        alert.accept();
     }
 
     @Test(dataProvider = "data")
@@ -208,4 +224,33 @@ public class _FreestyleTest extends BaseTest {
 
         deleteProject();
     }
+
+    @Test
+    public void testDisabledFreestyleProject() {
+        createDisabledFreeStyleProject();
+
+        String actualText = getDriver()
+                .findElement(By.id("enable-project"))
+                .getText();
+
+        deleteItem();
+
+        Assert.assertTrue(actualText.contains("This project is currently disabled"));
+    }
+
+    @Test
+    public void testDisabledEnabledFreestyleProject() {
+        createDisabledFreeStyleProject();
+
+        getDriver().findElement(By.id("yui-gen1-button")).click();
+
+        String actualText = getDriver()
+                .findElement(By.id("yui-gen1-button"))
+                .getText();
+
+        deleteItem();
+
+        Assert.assertEquals(actualText,"Disable Project");
+    }
+
 }

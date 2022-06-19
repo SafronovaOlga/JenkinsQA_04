@@ -9,7 +9,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 import runner.BaseTest;
 
@@ -36,8 +35,7 @@ public class FreestyleProjectBuildStepTest extends BaseTest {
 
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", addBuildStep);
 
-        new WebDriverWait(getDriver(), 10)
-                .until(ExpectedConditions.elementToBeClickable(addBuildStep));
+        getWait20().until(ExpectedConditions.elementToBeClickable(addBuildStep));
 
         Actions action = new Actions(getDriver());
         action.moveToElement(addBuildStep);
@@ -73,8 +71,7 @@ public class FreestyleProjectBuildStepTest extends BaseTest {
         List<WebElement> buildHistory = getDriver().findElements(
                 By.className("display-name"));
 
-        new WebDriverWait(getDriver(), 5)
-                .until(ExpectedConditions.visibilityOfAllElements(buildHistory));
+        getWait20().until(ExpectedConditions.visibilityOfAllElements(buildHistory));
 
         Actions action = new Actions(getDriver());
         action.moveToElement(buildHistory.get(0)).click().build().perform();
@@ -82,8 +79,7 @@ public class FreestyleProjectBuildStepTest extends BaseTest {
         getDriver().findElement(By.xpath("//span[text()='Console Output']")).click();
         WebElement consoleOutput = getDriver().findElement(By.className("console-output"));
 
-        new WebDriverWait(getDriver(), 5)
-                .until(ExpectedConditions.visibilityOf(consoleOutput));
+        getWait20().until(ExpectedConditions.visibilityOf(consoleOutput));
 
         assertTrue(consoleOutput.getText().contains("JOB_NAME=" + PROJECT_NAME));
         assertTrue(consoleOutput.getText().contains("SUCCESS"));

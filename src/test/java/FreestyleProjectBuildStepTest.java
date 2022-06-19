@@ -21,7 +21,7 @@ public class FreestyleProjectBuildStepTest extends BaseTest {
     private static final String PROJECT_NAME = RandomStringUtils.randomAlphanumeric(3, 10);
 
     private void createFreestyleProjectWithBuildStep(String environmentVariable) throws InterruptedException, AWTException {
-        System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "false");
         Robot robot = new Robot();
 
         getDriver().findElement(

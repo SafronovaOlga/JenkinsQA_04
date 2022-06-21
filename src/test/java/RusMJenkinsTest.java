@@ -2,20 +2,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import org.testng.util.Strings;
 import runner.BaseTest;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.*;
 
-public class  RusMJenkinsTest extends BaseTest {
+public class RusMJenkinsTest extends BaseTest {
+
+    private static final String NEW_ITEM_OR_BACK_TO_DASHBOARD_BUTTONS = "//div[@id='tasks']/div[1]/span/a";
+    private static final String DESCRIPTION_OF_PARAMETER = "//div[contains(text(),'Description of parameter')]";
 
     private boolean notPresent() {
         try {
@@ -26,12 +27,21 @@ public class  RusMJenkinsTest extends BaseTest {
         }
     }
 
-    private void clickNewItemButton() {
-        getDriver().findElement(By.xpath("//div[@id='tasks']/div[1]/span/a/span[2]")).click();
+    private void clickNewItemOrBackToDashboardButtons() {
+        getDriver().findElement(By.xpath(NEW_ITEM_OR_BACK_TO_DASHBOARD_BUTTONS)).click();
+    }
+
+    private void inputNewItemName(String name) {
+        getDriver().findElement(By.id("name")).sendKeys(name);
+    }
+
+    private void chooseFreestyleProject() {
+        getDriver().findElement(By
+                .xpath("//div[@id='j-add-item-type-standalone-projects']/ul/li[1]/label")).click();
     }
 
     private void clickOkButton() {
-        getDriver().findElement(By.xpath("//button[@id='ok-button']"))
+        getDriver().findElement(By.id("ok-button"))
                 .click();
     }
 
@@ -44,30 +54,30 @@ public class  RusMJenkinsTest extends BaseTest {
         getDriver().findElement(By.xpath("//button")).click();
     }
 
-    private void clickBackToDashboard() {
-        getDriver().findElement(By.xpath("//div[@id='tasks']/div[1]/span/a")).click();
+    private void createPipeline() {
+        clickNewItemOrBackToDashboardButtons();
+        inputNewItemName("First Pipeline Project");
+        getDriver().findElement(By.xpath("//div[@id='j-add-item-type-standalone-projects']/ul/li[2]"))
+                .click();
+        clickOkButton();
     }
 
-    static String inputNewItemName = "//input[@id='name']";
-
-    private void createPipeline(String itemPipelineName) {
-        getDriver().findElement(By.xpath("//div[@id=\"tasks\"]/div[1]/span/a")).click();
-        getDriver().findElement(By.id("name")).sendKeys(itemPipelineName);
-        getDriver().findElement(By.xpath("//div[@id=\"j-add-item-type-standalone-projects\"]/ul/li[2]")).click();
-        getDriver().findElement(By.id("ok-button")).click();
+    private void clickAddParameterOrBuildButton() {
+        getDriver().findElement(By.id("yui-gen1-button")).click();
     }
 
-    private List<WebElement> value;
+    private void clickOnParameters() {
+        getDriver().findElement(By.xpath("//span[contains(text(),'Parameters')]")).click();
+    }
 
     @Test
     public void testFreestyleNewItemValidName() {
-        clickNewItemButton();
-        getDriver().findElement(By.xpath((inputNewItemName))).sendKeys("item 123");
-        getDriver().findElement(By.xpath("//div[@id='j-add-item-type-standalone-projects']/ul/li"))
-                .click();
+        clickNewItemOrBackToDashboardButtons();
+        inputNewItemName("item 123");
+        chooseFreestyleProject();
         clickOkButton();
         clickSaveButton();
-        clickBackToDashboard();
+        clickNewItemOrBackToDashboardButtons();
 
         assertTrue(getDriver().findElement(By.xpath("//tr[@id='job_item 123']/td[3]/a"))
                 .isDisplayed());
@@ -76,35 +86,42 @@ public class  RusMJenkinsTest extends BaseTest {
     @Ignore
     @Test
     public void testFreestyleRename() {
+        clickNewItemOrBackToDashboardButtons();
+        inputNewItemName("item 234");
+        chooseFreestyleProject();
+        clickOkButton();
+        clickSaveButton();
+        clickNewItemOrBackToDashboardButtons();
+
         Actions dropdown = new Actions(getDriver());
         dropdown.moveToElement(getDriver().findElement(By
-                .xpath("//tr[@id='job_item 123']/td[3]/a"))).perform();
+                .xpath("//tr[@id='job_item 234']/td[3]/a"))).perform();
 
         getDriver().findElement(By.xpath("//div[@id='menuSelector']")).click();
+
         getDriver().findElement(By
-                .xpath("//html/body/div[2]/div/div[2]/div[2]/div/div/div/div[1]/ul/li[6]/a")).click();
+                .xpath("//a[contains(@href,'/job/item%20234/confirm-rename')]")).click();
 
         WebElement renameProjectName = getDriver().findElement(By
-                .xpath("//body/div[4]/div[2]/form/div[1]/div[1]/div[2]/input"));
+                .xpath("//input[@type='text']"));
         renameProjectName.clear();
         renameProjectName.sendKeys("project987");
 
         clickTheButton();
 
-        Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id=\"main-panel\"]/h1"))
+        Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/h1"))
                 .getText(), "Project project987");
 
-        clickBackToDashboard();
+        clickNewItemOrBackToDashboardButtons();
 
         Assert.assertEquals(getDriver().findElement(By
-                        .xpath("//tr[@id='job_project987']/td[3]/a"))
-                            .getText(), "project987");
+                .xpath("//tr[@id='job_project987']/td[3]/a")).getText(), "project987");
     }
 
     @Test
     public void testFolderDelete() {
-        clickNewItemButton();
-        getDriver().findElement(By.xpath((inputNewItemName))).sendKeys("Folder 1");
+        clickNewItemOrBackToDashboardButtons();
+        inputNewItemName("Folder 1");
         getDriver().findElement(By
                 .xpath("//div[@id='j-add-item-type-nested-projects']/ul/li[1]/label")).click();
         clickOkButton();
@@ -113,77 +130,5 @@ public class  RusMJenkinsTest extends BaseTest {
         clickTheButton();
 
         assertTrue(notPresent());
-    }
-
-    @Ignore
-    @Test
-    public void testPipelineBuild() {
-
-        final String itemPipelineName = "First Pipeline Project";
-
-        createPipeline(itemPipelineName);
-
-        getDriver().findElement(By
-                .xpath("//div[@id='main-panel']//div[11]/div[2]/div/div/div/div[1]/div/label")).click();
-        getDriver().findElement(By.xpath("//button[@id='yui-gen1-button']")).click();
-        getDriver().findElement(By.xpath("//li[@id='yui-gen9']/a")).click();
-        getDriver().findElement(By.name("parameter.name"))
-                .sendKeys("Name of the Choice Parameter");
-        getDriver().findElement(By.name("parameter.choices"))
-                .sendKeys("First Choice" + '\n' + "Second Choice" + '\n' + "Third Choice");
-        getDriver().findElement(By.name("parameter.description"))
-                .sendKeys("Description of parameter");
-        getDriver().findElement(By.xpath("//button[@id='yui-gen6-button']")).click();
-        getDriver().findElement(By.xpath("//div[@id='tasks']/div[4]/span/a")).click();
-        getDriver().findElement(By.xpath("//div[@id=\"main-panel\"]/h1")).getText();
-
-        SoftAssert asserts = new SoftAssert();
-
-        asserts.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/h1"))
-                .getText(), "Pipeline First Pipeline Project");
-
-        asserts.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/p"))
-                .getText(), "This build requires parameters:");
-
-        asserts.assertEquals(getDriver().findElement(By
-                        .xpath("//div[@id='main-panel']/form/div[1]/div[1]/div[1]"))
-                .getText(), "Name of the Choice Parameter");
-
-        List<WebElement> option = getDriver().findElements(By.xpath("//select/option"));
-        List<String> actualRes = new ArrayList<>();
-
-        for (WebElement dropDown : option) {
-            actualRes.add(dropDown.getText());
-        }
-
-        List<String> expectedRes = new ArrayList<>();
-        expectedRes.add("First Choice");
-        expectedRes.add("Second Choice");
-        expectedRes.add("Third Choice");
-
-        asserts.assertEquals(actualRes, expectedRes);
-
-        asserts.assertEquals(getDriver().findElement(By
-                .xpath("//div[@id='main-panel']/form/div[1]/div[1]/div[4]/div[2]"))
-                .getText(), "Description of parameter");
-
-        getDriver().findElement(By.xpath("//button[@id=\"yui-gen1-button\"]")).click();
-        getDriver().findElement(By.xpath("//a[contains(@href,'/job/First%20Pipeline%20Project/1/')]"))
-                .click();
-        getDriver().findElement(By.xpath("//div[@id=\"tasks\"]/div[7]/span/a")).click();
-
-        asserts.assertEquals(getDriver().findElement(By
-                .xpath("//div[@id=\"main-panel\"]/div/div/div[2]/div/div[1]"))
-                .getText(), "Name of the Choice Parameter");
-
-        asserts.assertEquals(getDriver().findElement(By
-                .xpath("//div[@id='main-panel']/div/div/div[2]/div/div[2]/input"))
-                .getAttribute("value"), "First Choice");
-
-        asserts.assertEquals(getDriver().findElement(By
-                .xpath("//div[@id=\"main-panel\"]/div/div/div[2]/div/div[4]/div[2]"))
-                .getText(), "Description of parameter");
-
-        asserts.assertAll();
     }
 }

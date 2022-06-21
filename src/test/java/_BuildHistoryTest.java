@@ -146,10 +146,8 @@ public class _BuildHistoryTest extends BaseTest {
         String buildName = getDriver().findElement(By.xpath("//span[@class='jenkins-icon-adjacent']")).getText();
         String buildDescription = getDriver().findElement(By.id("description")).getText();
 
-        Assert.assertEquals(getDriver().getCurrentUrl(), "http://localhost:8080/job/NewFreestyleProject/lastBuild/");
         Assert.assertTrue(buildName.contains("Build New build 123"));
         Assert.assertTrue(buildDescription.contains("Build 123 description test"));
-
     }
 
     @Test(dependsOnMethods = {"testVerifyChangeOnBuildStatusPage"})
@@ -161,10 +159,8 @@ public class _BuildHistoryTest extends BaseTest {
         String buildName = getDriver().findElement(By.xpath("//a[text()='New build 123']")).getText();
         String buildDescription = getDriver().findElement(By.xpath("//div[@class='pane desc indent-multiline']")).getText();
 
-        Assert.assertEquals(getDriver().getCurrentUrl(), "http://localhost:8080/job/NewFreestyleProject/");
         Assert.assertTrue(buildName.contains("New build 123"));
         Assert.assertTrue(buildDescription.contains("Build 123 description test"));
-
     }
 
     @Test(dependsOnMethods = {"testVerifyChangeOnProjectStatusPage"})
@@ -177,9 +173,7 @@ public class _BuildHistoryTest extends BaseTest {
 
         String buildName = getDriver().findElement(By.xpath("//a[@href='/job/NewFreestyleProject/1/']")).getText();
 
-        Assert.assertEquals(getDriver().getCurrentUrl(), "http://localhost:8080/view/all/builds");
         Assert.assertTrue(buildName.contains("New build 123"));
-
     }
 
 }

@@ -473,6 +473,7 @@ public class _FolderTest extends BaseTest {
         deleteFolder(folderName);
     }
 
+    @Ignore
     @Test
     public void testCheckDescriptionInPreviewAndOnTheFolderPage() {
         final String expectedResult = "General";
@@ -493,6 +494,7 @@ public class _FolderTest extends BaseTest {
         deleteFolderFromSideMenu();
     }
 
+    @Ignore
     @Test
     public void testDeleteFolderFromTheTopMenu() {
         final String expectedResult = "Nothing seems to match.";

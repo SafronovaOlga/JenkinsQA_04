@@ -13,6 +13,7 @@ import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import runner.BaseTest;
+import runner.ProjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class _PipelineTest extends BaseTest {
     }
 
     private void createPipeline(String name, boolean buttonOk) {
-        getDriver().findElement(By.cssSelector("[title='New Item']")).click();
+        ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
         getDriver().findElement(By.id("name")).sendKeys(name);
         getDriver().findElement(By.xpath("//span[text()='Pipeline']")).click();
         if (buttonOk) {
@@ -112,7 +113,7 @@ public class _PipelineTest extends BaseTest {
 
     private void cleanAllPipelines() {
         getDriver().findElement(LINK_JENKINS_HOMEPAGE).click();
-        getDriver().findElement(By.xpath("//span[text()='Manage Jenkins']")).click();
+        ProjectUtils.Dashboard.Main.ManageJenkins.click(getDriver());
         getDriver().findElement(By.xpath("//a[@href='script']")).click();
         action.moveToElement(getDriver().findElement(
                         By.xpath("//div[@class='CodeMirror-scroll cm-s-default']")))
@@ -391,7 +392,7 @@ public class _PipelineTest extends BaseTest {
                 By.xpath(String.format("//a[text()='%s']", name)))).build().perform();
         getDriver().findElement(By.id("menuSelector")).click();
 
-        getDriver().findElement(By.xpath("//span[text()='Delete Pipeline']")).click();
+        ProjectUtils.Dashboard.Pipeline.DELETE_PIPELINE.click(getDriver());
         getDriver().switchTo().alert().accept();
 
         checkProjectAfterDelete(name);
@@ -430,7 +431,7 @@ public class _PipelineTest extends BaseTest {
         createPipeline(pipelineName(), Boolean.TRUE);
 
         homePageClick();
-        getDriver().findElement(By.xpath("//span[text()='Manage Jenkins']")).click();
+        ProjectUtils.Dashboard.Main.ManageJenkins.click(getDriver());
         getDriver().findElement(By.xpath("//a[@href='script']")).click();
 
         cleanAllPipelines();
@@ -459,7 +460,6 @@ public class _PipelineTest extends BaseTest {
         Assert.assertEquals(errorMessage.getText(), expectedMessage + " is an unsafe character");
     }
 
-    @Ignore
     @Test
     public void testCheckIcon() {
         final String name = pipelineName();
@@ -472,10 +472,13 @@ public class _PipelineTest extends BaseTest {
 
         String iconLocator = String.format("//tr[@id='job_%s']/td/div/span/*[@tooltip]", name);
 
-        try {
-            Thread.sleep(2000L);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if($x(iconLocator).getAttribute("tooltip").equals("Not built")
+                || $x(iconLocator).getAttribute("tooltip").equals("In Progress")) {
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         homePageClick();
 
@@ -615,15 +618,16 @@ public class _PipelineTest extends BaseTest {
 
         getDriver().findElement(By.xpath("//input[@name = '" + name + "']")).click();
         scrollPageDown();
-        List<String> existingColumnsNames = getTextFromListWebElements(
-                getDriver().findElements(By.xpath("//div[@descriptorid]//b")));
+        List<String> existingColumnsNames = getTextFromListWebElements(getDriver().findElements(
+                By.xpath("//div[@descriptorid]//b")));
         click(ADD_COLUMN_BUTTON);
-        List<String> columnsCanAddNames = getTextFromListWebElements(
-                getDriver().findElements(By.cssSelector("#yui-gen4  li a")));
+        List<String> columnsCanAddNames = getTextFromListWebElements(getDriver().findElements(
+                By.cssSelector("#yui-gen4  li a")));
         columnsCanAddNames.removeAll(existingColumnsNames);
 
         for (String columnsCanAddName : columnsCanAddNames) {
-            getDriver().findElement(By.xpath("//a[contains(text(), '" + columnsCanAddName + "')]")).click();
+            getDriver().findElement(
+                    By.xpath("//a[contains(text(), '" + columnsCanAddName + "')]")).click();
             scrollPageDown();
             click(ADD_COLUMN_BUTTON);
         }

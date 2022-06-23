@@ -36,12 +36,25 @@ public final class ProjectUtils {
         driver.findElement(By.xpath("//a[@href='/logout']")).click();
     }
 
+    public static void clickDashboard(WebDriver driver) {
+        driver.findElement(By.linkText("Dashboard")).click();
+    }
+
+    public static void clickNewItem(WebDriver driver) {
+        driver.findElement(By.linkText("New Item")).click();
+    }
+
+    public static void clickOKButton(WebDriver driver) {
+        driver.findElement(By.id("ok-button")).click();
+    }
+
     public static class Dashboard {
 
         public enum Main {
             NewItem(By.linkText("New Item")),
             People(By.linkText("People")),
-            BuildHistory(By.linkText("Build History"));
+            BuildHistory(By.linkText("Build History")),
+            ManageJenkins(By.linkText("Manage Jenkins"));
 
             private final By locator;
 
@@ -67,6 +80,76 @@ public final class ProjectUtils {
             public void click(WebDriver driver) {
                 driver.findElement(locator).click();
             }
+        }
+
+        public enum JenkinsOwnUserDatabase {
+
+            CreateUser(By.xpath("//span[text()='Create User']"));
+
+            private final By locator;
+
+            JenkinsOwnUserDatabase(By locator) {
+                this.locator = locator;
+            }
+
+            public void click(WebDriver driver) {
+                driver.findElement(locator).click();
+            }
+        }
+    }
+
+    public enum ManageJenkins {
+
+        ConfigureSystem(By.xpath("//dt[text()='Configure System']")),
+        GlobalToolConfiguration(By.xpath("//dt[text()='Global Tool Configuration']")),
+        ManagePlugins(By.xpath("//dt[text()='Manage Plugins']")),
+        ManageNodesAndClouds(By.xpath("//dt[text()='Manage Nodes and Clouds']")),
+        ConfigureGlobalSecurity(By.xpath("//dt[text()='Configure Global Security']")),
+        ManageCredentials(By.xpath("//dt[text()='Manage Credentials']")),
+        ConfigureCredentialProviders(By.xpath("//dt[text()='Configure Credential Providers']")),
+        ManageUsers(By.xpath("//dt[text()='Manage Users']")),
+        SystemInformation(By.xpath("//dt[text()='System Information']")),
+        CSystemLog(By.xpath("//dt[text()='System Log']")),
+        LoadStatistics(By.xpath("//dt[text()='Load Statistics']")),
+        AboutJenkins(By.xpath("//dt[text()='About Jenkins']")),
+        ManageOldData(By.xpath("//dt[text()='Manage Old Data']")),
+        ReloadConfigurationFromDisk(By.xpath("//dt[text()='Reload Configuration from Disk']")),
+        JenkinsCLI(By.xpath("//dt[text()='Jenkins CLI']")),
+        ScriptConsole(By.xpath("//dt[text()='Script Console']")),
+        PrepareForShutdown(By.xpath("//dt[text()='Prepare for Shutdown']"));
+
+        private final By locator;
+
+        ManageJenkins(By locator) {
+            this.locator = locator;
+        }
+
+            public void click(WebDriver driver) {
+                driver.findElement(locator).click();
+            }
+        }
+
+        public enum Folder {
+            Up(By.linkText("Up")),
+            Status(By.linkText("Status")),
+            Configure(By.linkText("Configure")),
+            NewItem(By.linkText("New Item")),
+            DeleteFolder(By.linkText("Delete Folder")),
+            People(By.linkText("People")),
+            BuildHistory(By.linkText("Build History")),
+            Move(By.linkText("Move")),
+            Rename(By.linkText("Rename")),
+            Credentials(By.linkText("Credentials")),
+            NewView(By.linkText("NewView"));
+
+            private final By locator;
+
+            Folder(By locator) {
+                this.locator = locator;
+            }
+
+        public void click(WebDriver driver) {
+            driver.findElement(locator).click();
         }
     }
 }

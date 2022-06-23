@@ -10,13 +10,11 @@ import runner.BaseTest;
 
 import static org.testng.Assert.assertTrue;
 
-@Ignore
+
 public class RenamePipelineTest extends BaseTest {
 
     private static final String PIPELINE_NAME = RandomStringUtils.randomAlphanumeric(3, 5);
     private static final String NEW_PIPELINE_NAME = RandomStringUtils.randomAlphanumeric(6, 10);
-
-    private static final By DASHBOARD_ITEM = By.xpath("//tr[@id='job_" + PIPELINE_NAME + "']");
 
     private void getDashboard() {
         getDriver().findElement(
@@ -36,102 +34,98 @@ public class RenamePipelineTest extends BaseTest {
                 By.xpath("//tr[@id='job_" + pipelineName + "']//a[contains(@class,'jenkins-table__link')]"));
     }
 
-    private boolean isPipelinePresentOnTheDashboard(By xpath) {
+    private boolean isPipelinePresentOnTheDashboard(String pipelineName) {
         try {
-            getDriver().findElement(xpath);
+            getPipelineOnTheDashboard(pipelineName).isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }
         return true;
     }
 
-    private boolean isPipelineNameOnThePipelinePage(String pipelineName) {
-        return getDriver().findElement(
-                By.xpath("//h1[text()='Pipeline " + pipelineName + "']")).isDisplayed();
-    }
-
     private void clickMenuItemByName(String menuItemName) {
-        getDriver().findElement(By.xpath("//span[text()='" + menuItemName + "']/../../a")).click();
+        getDriver().findElement(
+                By.xpath("//span[text()='" + menuItemName + "']/../../a")).click();
     }
 
     private void clickButtonByName(String buttonName) {
-        getDriver().findElement(By.xpath("//button[text()='" + buttonName + "']")).click();
+        getDriver().findElement(
+                By.xpath("//button[text()='" + buttonName + "']")).click();
     }
 
     private void openSubMenu(WebElement element) {
+        WebElement menuSelector = getDriver().findElement(By.id("menuSelector"));
         Actions actions = new Actions(getDriver());
         actions.moveToElement(element);
-        WebElement menuSelector = getDriver().findElement(By.id("menuSelector"));
         actions.moveToElement(menuSelector);
         actions.click().build().perform();
     }
 
-    @Ignore
-    @Test(priority = 1)
+    @Test
     public void testRenamePipelineWithValidName() {
         getDashboard();
 
-        if (!isPipelinePresentOnTheDashboard(DASHBOARD_ITEM)) {
+        if (!isPipelinePresentOnTheDashboard(PIPELINE_NAME)) {
             createPipeline(PIPELINE_NAME);
+            getDashboard();
         }
-
-        assertTrue(isPipelineNameOnThePipelinePage(PIPELINE_NAME));
-
-        getDashboard();
 
         assertTrue(getPipelineOnTheDashboard(PIPELINE_NAME).isDisplayed());
 
         openSubMenu(getPipelineOnTheDashboard(PIPELINE_NAME));
         clickMenuItemByName("Rename");
-
         getDriver().findElement(
                 By.xpath("//div[@class='setting-main']/input[@name='newName']")).clear();
-
         getDriver().findElement(
                 By.xpath("//div[@class='setting-main']/input[@name='newName']"))
                 .sendKeys(NEW_PIPELINE_NAME);
-
         clickButtonByName("Rename");
 
-        assertTrue(isPipelineNameOnThePipelinePage(NEW_PIPELINE_NAME));
+        assertTrue(getDriver().findElement(
+                By.xpath("//h1[text()='Pipeline " + NEW_PIPELINE_NAME + "']")).isDisplayed());
 
         clickMenuItemByName("Back to Dashboard");
 
-        assertTrue(getPipelineOnTheDashboard(NEW_PIPELINE_NAME).isDisplayed());
+        assertTrue(isPipelinePresentOnTheDashboard(NEW_PIPELINE_NAME));
     }
 
-    @Ignore
-    @Test(priority = 2)
+    @Test
     public void testRenamePipelineWithTheSameName() {
         getDashboard();
 
-        if (!isPipelinePresentOnTheDashboard(DASHBOARD_ITEM)) {
+        if (!isPipelinePresentOnTheDashboard(PIPELINE_NAME)) {
             createPipeline(PIPELINE_NAME);
+        } else {
+            getDriver().findElement(
+                    By.xpath("//a[text()='" + PIPELINE_NAME + "']")).click();
         }
 
         clickMenuItemByName("Rename");
 
-        Assert.assertEquals(getDriver().findElement(By.xpath("//div[@class='warning']")).getText(),
+        Assert.assertEquals(getDriver().findElement(
+                By.xpath("//div[@class='warning']")).getText(),
                 "The new name is the same as the current name.");
 
         clickButtonByName("Rename");
 
-        Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/h1")).getText(),
-                "Error");
-        Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/p")).getText(),
+        Assert.assertEquals(getDriver().findElement(
+                By.xpath("//div[@id='main-panel']/h1")).getText(), "Error");
+        Assert.assertEquals(getDriver().findElement(
+                By.xpath("//div[@id='main-panel']/p")).getText(),
                 "The new name is the same as the current name.");
     }
 
-    @Ignore
-    @Test(priority = 3)
+    @Test
     public void testRenamePipelineWithInvalidName() {
         String[] invalidCharacters = {"!", "@", "#", "$", "%", "^", "*", ":", ";", "\\", "|", "?"};
 
         getDashboard();
 
-        if (!isPipelinePresentOnTheDashboard(DASHBOARD_ITEM)) {
+        if (!isPipelinePresentOnTheDashboard(PIPELINE_NAME)) {
             createPipeline(PIPELINE_NAME);
+            getDashboard();
         }
+
         openSubMenu(getPipelineOnTheDashboard(PIPELINE_NAME));
         clickMenuItemByName("Rename");
 
@@ -139,9 +133,10 @@ public class RenamePipelineTest extends BaseTest {
             getDriver().findElement(By.xpath("//div[@class='setting-main']/input[@name='newName']")).sendKeys(str);
             clickButtonByName("Rename");
 
-            Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/h1")).getText(),
-                    "Error");
-            Assert.assertEquals(getDriver().findElement(By.xpath("//div[@id='main-panel']/p")).getText(),
+            Assert.assertEquals(getDriver().findElement(
+                    By.xpath("//div[@id='main-panel']/h1")).getText(), "Error");
+            Assert.assertEquals(getDriver().findElement(
+                    By.xpath("//div[@id='main-panel']/p")).getText(),
                     String.format("‘%s’ is an unsafe character", str));
 
             getDriver().navigate().back();

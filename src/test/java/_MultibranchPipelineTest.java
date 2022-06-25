@@ -1,11 +1,11 @@
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import runner.BaseTest;
+import runner.ProjectUtils;
 
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public class _MultibranchPipelineTest extends BaseTest {
     private void createMultibranchPipeline(){
         getDriver().findElement(By.className("task-link-text")).click();
         getDriver().findElement(By.id("name")).sendKeys(PIPELINE_NAME);
-        getDriver().findElement(By.xpath("//span[text()='Multibranch Pipeline']")).click();
+        ProjectUtils.Dashboard.NewItem.MultiBranchPipeline.click(getDriver());
         getDriver().findElement(By.id("ok-button")).click();
     }
 
@@ -60,7 +60,7 @@ public class _MultibranchPipelineTest extends BaseTest {
         newItemButton.click();
 
         findElementId("name").sendKeys(PROJECT_NAME);
-        findElementXpath("//span[@class='label' and contains(text(), 'Multibranch Pipeline')]").click();
+        ProjectUtils.Dashboard.NewItem.MultiBranchPipeline.click(getDriver());
         findElementId("ok-button").click();
 
         clickSaveButton();

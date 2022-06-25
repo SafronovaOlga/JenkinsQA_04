@@ -57,7 +57,7 @@ public class _FreestyleTest extends BaseTest {
 
     private void deleteFreestyleProject(String name) {
         ProjectUtils.Dashboard.Main.Dashboard.click(getDriver());
-        TestUtils.actionsClick(getDriver(), By.xpath("//a[text()='" + name + "']"));
+        getActions().moveToElement(getDriver().findElement(By.xpath("//a[text()='" + name + "']"))).click().build().perform();
         ProjectUtils.Dashboard.Project.DeleteProject.click(getDriver());
         getDriver().switchTo().alert().accept();
     }
@@ -248,7 +248,8 @@ public class _FreestyleTest extends BaseTest {
         getDriver().findElement(By.linkText("Configure")).click();
         getDriver().findElement(By.cssSelector(".tab.config-section-activator.config_build_triggers")).click();
         Thread.sleep(500);
-        TestUtils.actionsClick(getDriver(), By.xpath("//a[@tooltip='Help for feature: Build periodically']"));
+        getActions().moveToElement(getDriver().findElement(By.xpath("//a[@tooltip='Help for feature: Build periodically']"))).click().build().perform();
+
 
         String actualText = getWait5().until(ExpectedConditions.visibilityOfElementLocated(By.id("tt"))).getText();
 
@@ -297,9 +298,10 @@ public class _FreestyleTest extends BaseTest {
 
         ProjectUtils.Dashboard.Main.Dashboard.click(getDriver());
 
-        TestUtils.actionsClick(getDriver(), By.xpath("//a[@href='job/" + RANDOM_NAME + "/']"));
-        TestUtils.actionsClick(getDriver(), By.xpath("//div[@id='menuSelector']"));
-        TestUtils.actionsClick(getDriver(), By.xpath("//a[@href='/job/" + RANDOM_NAME + "/confirm-rename']"));
+        getActions().moveToElement(getDriver().findElement(By.xpath("//a[@href='job/" + RANDOM_NAME + "/']"))).click().build().perform();
+        getActions().moveToElement(getDriver().findElement(By.xpath("//div[@id='menuSelector']"))).click().build().perform();
+        getActions().moveToElement(getDriver().findElement(By.xpath("//a[@href='/job/" + RANDOM_NAME + "/confirm-rename']"))).click().build().perform();
+
 
         getDriver().findElement(By.xpath(
                 "//div[@id='main-panel']/form/div[1]/div[1]/div[2]/input")).clear();

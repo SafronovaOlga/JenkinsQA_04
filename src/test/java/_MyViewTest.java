@@ -91,7 +91,6 @@ public class _MyViewTest extends BaseTest {
         Assert.assertEquals(EDIT_VIEW_NAME, getDriver().findElement(By.xpath("//ul[@id='breadcrumbs']//a[contains(@href, '" + EDIT_VIEW_NAME + "')]")).getText());
     }
 
-
     @Test
     public void testAddDescriptionOnMyViews() {
         ProjectUtils.Dashboard.Main.MyViews.click(getDriver());

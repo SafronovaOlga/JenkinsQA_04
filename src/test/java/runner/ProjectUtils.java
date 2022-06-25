@@ -6,8 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-import static runner.BaseUtils.PREFIX_PROP;
-import static runner.BaseUtils.getProperties;
+import static runner.BaseUtils.*;
 
 public final class ProjectUtils {
 
@@ -88,6 +87,11 @@ public final class ProjectUtils {
     public static void clickEnableProject(WebDriver driver) {
         driver.findElement(By.xpath("//button[@type='submit' and contains(text(), 'Enable')]")).click();
     }
+
+    public static void clickAddOrEditDescriptionButton(WebDriver driver) {
+        driver.findElement(By.xpath("//a[contains(@href, 'editDescription')]")).click();
+    }
+
 
     public static class Dashboard {
 

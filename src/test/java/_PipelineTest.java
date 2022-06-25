@@ -396,7 +396,7 @@ public class _PipelineTest extends BaseTest {
                 By.xpath(String.format("//a[text()='%s']", name)))).build().perform();
         getDriver().findElement(By.id("menuSelector")).click();
 
-        ProjectUtils.Dashboard.Pipeline.DELETE_PIPELINE.click(getDriver());
+        ProjectUtils.Dashboard.Pipeline.DeletePipeline.click(getDriver());
         getDriver().switchTo().alert().accept();
 
         checkProjectAfterDelete(name);
@@ -435,7 +435,7 @@ public class _PipelineTest extends BaseTest {
         createPipeline(pipelineName(), Boolean.TRUE);
 
         homePageClick();
-        ProjectUtils.Dashboard.Main.ManageJenkins.click(getDriver());
+        getDriver().findElement(By.xpath("//span[text()='Manage Jenkins']")).click();
         getDriver().findElement(By.xpath("//a[@href='script']")).click();
 
         cleanAllPipelines();
@@ -462,31 +462,6 @@ public class _PipelineTest extends BaseTest {
         WebElement errorMessage = $("#itemname-invalid");
 
         Assert.assertEquals(errorMessage.getText(), expectedMessage + " is an unsafe character");
-    }
-
-    @Test
-    public void testCheckIcon() {
-        final String name = pipelineName();
-
-        createPipeline(name, Boolean.TRUE);
-        new Select($(".samples select")).selectByValue("hello");
-        $("[type='submit']").click();
-        $("#jenkins-home-link").click();
-        $x(String.format("//span[contains(text(), '%s')]/following-sibling::*[name()='svg']", name)).click();
-
-        String iconLocator = String.format("//tr[@id='job_%s']/td/div/span/*[@tooltip]", name);
-
-        if($x(iconLocator).getAttribute("tooltip").equals("Not built")
-                || $x(iconLocator).getAttribute("tooltip").equals("In Progress")) {
-            try {
-                Thread.sleep(2000L);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        homePageClick();
-
-        Assert.assertEquals($x(iconLocator).getAttribute("tooltip"), "Success");
     }
 
     @Ignore

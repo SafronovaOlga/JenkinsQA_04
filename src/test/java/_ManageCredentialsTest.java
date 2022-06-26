@@ -83,8 +83,8 @@ public class _ManageCredentialsTest extends BaseTest {
     public void testManageCredentialsChekMenu() {
 
         createNewUser();
-        WebElement newUser = getDriver().findElement(GLOBAL_CREDENTIALS);
-        Assert.assertTrue(newUser.getText().contains(NEW_USERNAME));
+
+        Assert.assertTrue(getDriver().findElement(GLOBAL_CREDENTIALS).getText().contains(NEW_USERNAME));
     }
 
     @Test

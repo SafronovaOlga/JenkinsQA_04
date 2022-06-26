@@ -9,8 +9,9 @@ import java.util.Arrays;
 
 public class _ManageCredentialsTest extends BaseTest {
     private static final String ICON_XPATH = "//td[@data='Jenkins Credentials Provider']";
-    public static final String NEW_USERNAME = TestUtils.getRandomStr(8);
-    public static final String NEW_PASSWORD = TestUtils.getRandomStr(9);
+    private static final String NEW_USERNAME = TestUtils.getRandomStr(8);
+    private static final String NEW_PASSWORD = TestUtils.getRandomStr(9);
+    private static final By GLOBAL_CREDENTIALS = By.xpath("//div[@id='main-panel']/table");
     private static final By SMALL_SIZE_ICONS = By.xpath("//a[@href='/iconSize?16x16']");
     private static final By MEDIUM_SIZE_ICONS = By.xpath("//a[@href='/iconSize?24x24']");
     private static final By LARGE_SIZE_ICONS = By.xpath("//a[@href='/iconSize?32x32']");
@@ -36,6 +37,22 @@ public class _ManageCredentialsTest extends BaseTest {
                 .getCssValue("background-color");
 
         return elementBGColor;
+    }
+
+    private void createNewUser(){
+        WebElement hoverable = getDriver().findElement(By.xpath("//a[@class='model-link inside inverse']"));
+        getActions().moveToElement(hoverable).perform();
+
+        getDriver().findElement(By.id("menuSelector")).click();
+        getDriver().findElement(By.id("yui-gen4")).click();
+        getDriver().findElement(By.xpath("//a[@title='User']")).click();
+        getDriver().findElement(By.xpath("//table/tbody/tr[2]/td[2]/a")).click();
+        getDriver().findElement(By.xpath("//div[2]/span/a/span[2]")).click();
+        getDriver().findElement(By.xpath("//input[@name='_.username']"))
+                .sendKeys(NEW_USERNAME);
+        getDriver().findElement(By.xpath("//input[@name='_.password']"))
+                .sendKeys(NEW_PASSWORD);
+        getDriver().findElement(By.id("yui-gen1-button")).click();
     }
 
     @Test
@@ -65,21 +82,8 @@ public class _ManageCredentialsTest extends BaseTest {
     @Test
     public void testManageCredentialsChekMenu() {
 
-        WebElement hoverable = getDriver().findElement(By.xpath("//a[@class='model-link inside inverse']"));
-        getActions().moveToElement(hoverable).perform();
-
-        getDriver().findElement(By.id("menuSelector")).click();
-        getDriver().findElement(By.id("yui-gen4")).click();
-        getDriver().findElement(By.xpath("//a[@title='User']")).click();
-        getDriver().findElement(By.xpath("//table/tbody/tr[2]/td[2]/a")).click();
-        getDriver().findElement(By.xpath("//div[2]/span/a/span[2]")).click();
-        getDriver().findElement(By.xpath("//input[@name='_.username']"))
-                .sendKeys(NEW_USERNAME);
-        getDriver().findElement(By.xpath("//input[@name='_.password']"))
-                .sendKeys(NEW_PASSWORD);
-        getDriver().findElement(By.id("yui-gen1-button")).click();
-        WebElement newUser = getDriver().findElement(By.xpath("//div[@id='main-panel']/table"));
-
+        createNewUser();
+        WebElement newUser = getDriver().findElement(GLOBAL_CREDENTIALS);
         Assert.assertTrue(newUser.getText().contains(NEW_USERNAME));
     }
 

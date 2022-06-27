@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static runner.BaseUtils.PREFIX_PROP;
 import static runner.BaseUtils.getProperties;
@@ -42,24 +43,30 @@ public final class ProjectUtils {
         driver.findElement(By.id("ok-button")).click();
     }
 
-    public static void createFreestyleProjectWithRandomName(WebDriver driver) {
+    public static void createProject(WebDriver driver, NewItemTypes itemType) {
         Dashboard.Main.NewItem.click(driver);
         driver.findElement(By.id("name")).sendKeys(TestUtils.getRandomStr());
-        Dashboard.NewItem.FreestyleProject.click(driver);
+        itemType.click(driver);
         clickOKButton(driver);
-        Dashboard.Main.Dashboard.click(driver);
     }
 
-    public static void createFreestyleProjectWithName(WebDriver driver, String name) {
+    public static void createProject(WebDriver driver, NewItemTypes itemType, String name) {
         Dashboard.Main.NewItem.click(driver);
         driver.findElement(By.id("name")).sendKeys(name);
-        Dashboard.NewItem.FreestyleProject.click(driver);
+        itemType.click(driver);
         clickOKButton(driver);
-        Dashboard.Main.Dashboard.click(driver);
     }
 
     public static void openProject(WebDriver driver, String name) {
         driver.findElement(By.xpath(String.format("//a[text()='%s']", name))).click();
+    }
+
+    public static List<String> getListOfJobs(WebDriver driver) {
+    List<String> jobsNames = driver.findElements(By.xpath("//table[@id='projectstatus']/tbody/tr/td[3]/a"))
+            .stream()
+            .map(WebElement::getText)
+            .collect(Collectors.toList());
+    return  jobsNames;
     }
 
     public static void goLoadStatisticsPage(WebDriver driver) {
@@ -70,6 +77,12 @@ public final class ProjectUtils {
     public static void goOnManageNodesAndCloudsPage(WebDriver driver) {
         Dashboard.Main.ManageJenkins.click(driver);
         ManageJenkins.ManageNodesAndClouds.click(driver);
+    }
+
+    public static void goOnCreateUserPage(WebDriver driver) {
+        Dashboard.Main.ManageJenkins.click(driver);
+        ManageJenkins.ManageUsers.click(driver);
+        Dashboard.JenkinsOwnUserDatabase.CreateUser.click(driver);
     }
 
     public static List<WebElement> getComputerNames(WebDriver driver) {
@@ -89,10 +102,42 @@ public final class ProjectUtils {
         driver.findElement(By.xpath("//button[@type='submit' and contains(text(), 'Enable')]")).click();
     }
 
+    public static void deleteJobsWithPrefix(WebDriver driver, String prefix) {
+        ProjectUtils.Dashboard.Header.Dashboard.click(driver);
+
+        List<String> jobsNames = driver.findElements(By.xpath("//table[@id='projectstatus']/tbody/tr/td[3]/a"))
+                .stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
+        jobsNames
+                .forEach(jobsName -> {
+                    if (jobsName.startsWith(prefix)) {
+                        String jobWithPercent = jobsName.replace(" ", "%20");
+                        driver.findElement(By.xpath("//a[@href='job/" + jobWithPercent + "/']")).click();
+                        driver.findElement(
+                                By.xpath("//a[@data-url='/job/" + jobWithPercent + "/doDelete']")).click();
+                        driver.switchTo().alert().accept();
+                    }
+                });
+    }
+
     public static class Dashboard {
 
+        public enum Header {
+            Dashboard(By.linkText("Dashboard"));
+
+            private final By locator;
+
+            Header(By locator) {
+                this.locator = locator;
+            }
+
+            public void click(WebDriver driver) {
+                driver.findElement(locator).click();
+            }
+        }
+
         public enum Main {
-            Dashboard(By.linkText("Dashboard")),
             NewItem(By.linkText("New Item")),
             People(By.linkText("People")),
             BuildHistory(By.linkText("Build History")),
@@ -134,17 +179,13 @@ public final class ProjectUtils {
             }
         }
 
-        public enum NewItem {
-            FreestyleProject(By.className("hudson_model_FreeStyleProject")),
-            Pipeline(By.className("org_jenkinsci_plugins_workflow_job_WorkflowJob")),
-            MultiConfigurationProject(By.className("hudson_matrix_MatrixProject")),
-            Folder(By.className("com_cloudbees_hudson_plugins_folder_Folder")),
-            MultiBranchPipeline(By.className("org_jenkinsci_plugins_workflow_multibranch_WorkflowMultiBranchProject")),
-            OrganizationFolder(By.className("jenkins_branch_OrganizationFolder"));
+        public enum Build {
+            ConsoleOutput(By.linkText("Console Output")),
+            Changes(By.linkText("Changes"));
 
             private final By locator;
 
-            NewItem(By locator) {
+            Build(By locator) {
                 this.locator = locator;
             }
 
@@ -214,16 +255,16 @@ public final class ProjectUtils {
         }
 
         public enum Pipeline {
-            BACK_TO_DASHBOARD(By.linkText("Back to Dashboard")),
-            STATUS(By.linkText("Status")),
-            CHANGES(By.linkText("Changes")),
-            BUILD_NOW(By.linkText("Build Now")),
-            CONFIGURE(By.linkText("Configure")),
-            DELETE_PIPELINE(By.xpath("//span[text()='Delete Pipeline']")),
-            MOVE(By.linkText("Move")),
-            FULL_STAGE_VIEW(By.linkText("Full Stage View")),
-            RENAME(By.linkText("Rename")),
-            PIPELINE_SYNTAX(By.linkText("Pipeine Syntax"));
+            BackToDashboard(By.linkText("Back to Dashboard")),
+            Status(By.linkText("Status")),
+            Changes(By.linkText("Changes")),
+            BuildNow(By.linkText("Build Now")),
+            Configure(By.linkText("Configure")),
+            DeletePipeline(By.xpath("//span[text()='Delete Pipeline']")),
+            Move(By.linkText("Move")),
+            FullStageView(By.linkText("Full Stage View")),
+            Rename(By.linkText("Rename")),
+            PipelineSyntax(By.linkText("Pipeine Syntax"));
 
             private final By locator;
 
@@ -268,17 +309,17 @@ public final class ProjectUtils {
         }
     }
 
-    public enum NewItem {
-        FreestyleProject(By.xpath("//span[text()='Freestyle project']")),
-        Pipeline(By.xpath("//span[text()='Pipeline']")),
-        MultiConfigurationProject(By.xpath("//span[text()='Multi-configuration project']")),
-        Folder(By.xpath("//span[text()='Folder']")),
-        MultibranchPipeline(By.xpath("//span[text()='Multibranch Pipeline']")),
-        OrganizationFolder(By.xpath("//span[text()='Organization Folder']"));
+    public enum NewItemTypes {
+        FreestyleProject(By.className("hudson_model_FreeStyleProject")),
+        Pipeline(By.className("org_jenkinsci_plugins_workflow_job_WorkflowJob")),
+        MultiConfigurationProject(By.className("hudson_matrix_MatrixProject")),
+        Folder(By.className("com_cloudbees_hudson_plugins_folder_Folder")),
+        MultiBranchPipeline(By.className("org_jenkinsci_plugins_workflow_multibranch_WorkflowMultiBranchProject")),
+        OrganizationFolder(By.className("jenkins_branch_OrganizationFolder"));
 
         private final By locator;
 
-        NewItem(By locator) {
+        NewItemTypes(By locator) {
             this.locator = locator;
         }
 
@@ -286,4 +327,5 @@ public final class ProjectUtils {
             driver.findElement(locator).click();
         }
     }
+
 }

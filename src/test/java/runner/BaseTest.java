@@ -23,6 +23,7 @@ public abstract class BaseTest {
 
     private WebDriverWait wait20;
     private WebDriverWait wait5;
+    private Actions actions;
 
     private List<List<Method>> methodList;
 
@@ -94,7 +95,12 @@ public abstract class BaseTest {
         return driver;
     }
 
-    protected Actions getActions() { return new Actions(driver); }
+    protected Actions getActions() {
+        if(actions == null) {
+            actions = new Actions(getDriver());
+        }
+        return actions;
+    }
 
     protected WebDriverWait getWait20() {
         if (wait20 == null) {

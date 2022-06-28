@@ -59,7 +59,6 @@ public class _ManageCredentialsTest extends BaseTest {
     public void testManageCredentialsCheсkMenu() {
 
         final String NEW_USERNAME = TestUtils.getRandomStr(8);
-        final String NEW_PASSWORD = TestUtils.getRandomStr(9);
 
         getActions().moveToElement(getDriver().findElement(
                 By.xpath("//a[@class='model-link inside inverse']"))).perform();
@@ -72,7 +71,7 @@ public class _ManageCredentialsTest extends BaseTest {
         getDriver().findElement(By.xpath("//input[@name='_.username']"))
                 .sendKeys(NEW_USERNAME);
         getDriver().findElement(By.xpath("//input[@name='_.password']"))
-                .sendKeys(NEW_PASSWORD);
+                .sendKeys(ProjectUtils.PASSWORD);
         getDriver().findElement(By.id("yui-gen1-button")).click();
         WebElement newUser = getDriver().findElement(By.xpath("//div[@id='main-panel']/table"));
 

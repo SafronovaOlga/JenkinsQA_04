@@ -15,6 +15,7 @@ public final class ProjectUtils {
     private static final String PROP_PORT = PREFIX_PROP + "port";
     private static final String PROP_ADMIN_USERNAME = PREFIX_PROP + "admin.username";
     private static final String PROP_ADMIN_PAS = PREFIX_PROP + "admin.password";
+    public static final String PASSWORD = TestUtils.getRandomStr(9);
 
     static void get(WebDriver driver) {
         driver.get(String.format("http://localhost:%s", getProperties().getProperty(PROP_PORT)));

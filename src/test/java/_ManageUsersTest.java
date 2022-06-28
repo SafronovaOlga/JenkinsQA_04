@@ -16,7 +16,6 @@ public class _ManageUsersTest extends BaseTest {
 
     private static final String USER_NAME_FIRST = "viktorp";
     private static final String USER_NAME_SECOND = "Balthazarrr";
-    private static final String PASSWORD = "123456ABC";
     private static final String FULL_NAME = "Viktor P";
     private static final String NEW_USER_FULL_NAME = "Michael";
     private static final String EMAIL = "testemail.@gmail.com";
@@ -45,7 +44,7 @@ public class _ManageUsersTest extends BaseTest {
     public void testUserCanCreateNewUser() {
 
         goOnCreateUserPage(getDriver());
-        fillOutFieldsCreateUser(USER_NAME_FIRST, PASSWORD, FULL_NAME, EMAIL);
+        fillOutFieldsCreateUser(USER_NAME_FIRST, ProjectUtils.PASSWORD, FULL_NAME, EMAIL);
         getDriver().findElement(BUTTON_SUBMIT_TYPE).click();
 
         for (WebElement user : TestUtils.getList(getDriver(), ALL_USERS)) {
@@ -92,7 +91,7 @@ public class _ManageUsersTest extends BaseTest {
         final String expectedResult = "User name must only contain alphanumeric characters, underscore and dash";
 
         goOnCreateUserPage(getDriver());
-        fillOutFieldsCreateUser("", PASSWORD, FULL_NAME, EMAIL);
+        fillOutFieldsCreateUser("", ProjectUtils.PASSWORD, FULL_NAME, EMAIL);
 
         List<String> specialCharacters = new ArrayList<>(Arrays.asList(
                 "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", ";", ":", "?", "=",
@@ -112,7 +111,7 @@ public class _ManageUsersTest extends BaseTest {
                     for (WebElement createUserField : createUserFields) {
                         createUserField.clear();
                     }
-                    fillOutFieldsCreateUser("", PASSWORD, FULL_NAME, EMAIL);
+                    fillOutFieldsCreateUser("", ProjectUtils.PASSWORD, FULL_NAME, EMAIL);
                 }
 
                 TestUtils.clearAndSend(getDriver(), By.id(USER_NAME_XPATH), nameWithSpecialCharacter);
@@ -144,7 +143,7 @@ public class _ManageUsersTest extends BaseTest {
         SoftAssert asserts = new SoftAssert();
 
         goOnCreateUserPage(getDriver());
-        fillOutFieldsCreateUser(USER_NAME_FIRST.concat("*"), PASSWORD, FULL_NAME, EMAIL);
+        fillOutFieldsCreateUser(USER_NAME_FIRST.concat("*"), ProjectUtils.PASSWORD, FULL_NAME, EMAIL);
         getDriver().findElement(BUTTON_SUBMIT_TYPE).click();
 
         List<String> cssValues = new ArrayList<>(Arrays.asList(

@@ -1,5 +1,6 @@
 package runner;
 
+import model.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,21 +17,17 @@ public final class ProjectUtils {
     private static final String PROP_ADMIN_USERNAME = PREFIX_PROP + "admin.username";
     private static final String PROP_ADMIN_PAS = PREFIX_PROP + "admin.password";
 
-    static void get(WebDriver driver) {
+    public static void get(WebDriver driver) {
         driver.get(String.format("http://localhost:%s", getProperties().getProperty(PROP_PORT)));
     }
 
     static void login(WebDriver driver) {
         get(driver);
 
-        WebElement name = driver.findElement(By.name("j_username"));
-        name.sendKeys(getProperties().getProperty(PROP_ADMIN_USERNAME));
-
-        WebElement password = driver.findElement(By.name("j_password"));
-        password.sendKeys(getProperties().getProperty(PROP_ADMIN_PAS));
-
-        WebElement SignIn = driver.findElement(By.name("Submit"));
-        SignIn.click();
+        new LoginPage(driver)
+                .sendUser(getProperties().getProperty(PROP_ADMIN_USERNAME))
+                .sendPassword(getProperties().getProperty(PROP_ADMIN_PAS))
+                .login();
     }
 
     static void logout(WebDriver driver) {
@@ -43,14 +40,11 @@ public final class ProjectUtils {
         driver.findElement(By.id("ok-button")).click();
     }
 
-    public static void createProject(WebDriver driver, NewItemTypes itemType) {
-        Dashboard.Main.NewItem.click(driver);
-        driver.findElement(By.id("name")).sendKeys(TestUtils.getRandomStr());
-        itemType.click(driver);
-        clickOKButton(driver);
+    public static void createProject(WebDriver driver, ProjectType itemType) {
+        createProject(driver, itemType, TestUtils.getRandomStr());
     }
 
-    public static void createProject(WebDriver driver, NewItemTypes itemType, String name) {
+    public static void createProject(WebDriver driver, ProjectType itemType, String name) {
         Dashboard.Main.NewItem.click(driver);
         driver.findElement(By.id("name")).sendKeys(name);
         itemType.click(driver);
@@ -59,35 +53,6 @@ public final class ProjectUtils {
 
     public static void openProject(WebDriver driver, String name) {
         driver.findElement(By.xpath(String.format("//a[text()='%s']", name))).click();
-    }
-
-    public static List<String> getListOfJobs(WebDriver driver) {
-    List<String> jobsNames = driver.findElements(By.xpath("//table[@id='projectstatus']/tbody/tr/td[3]/a"))
-            .stream()
-            .map(WebElement::getText)
-            .collect(Collectors.toList());
-    return  jobsNames;
-    }
-
-    public static void goLoadStatisticsPage(WebDriver driver) {
-        Dashboard.Main.ManageJenkins.click(driver);
-        ManageJenkins.LoadStatistics.click(driver);
-    }
-
-    public static void goOnManageNodesAndCloudsPage(WebDriver driver) {
-        Dashboard.Main.ManageJenkins.click(driver);
-        ManageJenkins.ManageNodesAndClouds.click(driver);
-    }
-
-    public static void goOnCreateUserPage(WebDriver driver) {
-        Dashboard.Main.ManageJenkins.click(driver);
-        ManageJenkins.ManageUsers.click(driver);
-        Dashboard.JenkinsOwnUserDatabase.CreateUser.click(driver);
-    }
-
-    public static List<WebElement> getComputerNames(WebDriver driver) {
-        goOnManageNodesAndCloudsPage(driver);
-        return driver.findElements(By.xpath("//table[@id='computers']/tbody/*/td[2]"));
     }
 
     public static void clickSaveButton(WebDriver driver) {
@@ -313,8 +278,8 @@ public final class ProjectUtils {
         }
     }
 
-    public enum NewItemTypes {
-        FreestyleProject(By.className("hudson_model_FreeStyleProject")),
+    public enum ProjectType {
+        Freestyle(By.className("hudson_model_FreeStyleProject")),
         Pipeline(By.className("org_jenkinsci_plugins_workflow_job_WorkflowJob")),
         MultiConfigurationProject(By.className("hudson_matrix_MatrixProject")),
         Folder(By.className("com_cloudbees_hudson_plugins_folder_Folder")),
@@ -323,7 +288,7 @@ public final class ProjectUtils {
 
         private final By locator;
 
-        NewItemTypes(By locator) {
+        ProjectType(By locator) {
             this.locator = locator;
         }
 

@@ -28,17 +28,17 @@ public class _PipelineTest extends BaseTest {
     private static final By H1 = By.xpath("//h1");
     private static final By PIPELINE_ITEM_CONFIGURATION =
             By.cssSelector(".config-section-activators .config_pipeline");
-    private static final By LINK_JENKINS_HOMEPAGE = By.id("jenkins-name-icon");
     private static final By CHECKBOX_PROJECT_PARAMETERIZED =
             By.xpath("//label[text()='This project is parameterized']");
     private static final By ADD_BOOLEAN_PARAMETER = By.xpath("//b[text()='Boolean Parameter']");
     private static final By NEW_NAME =
             By.xpath("//div[@class='setting-main']/input[@name='newName']");
+    private static final By WARNING_MESSAGE = By.className("error");
+    private static final By DROP_DOWN_MENU_PIPELINE_TAB = By.cssSelector(".samples");
 
     private static final String JENKINS_HEADER = "Welcome to Jenkins!";
     private static final String DESCRIPTION_OF_PARAMETER = "//div[contains(text(),'Description of parameter')]";
     private static final String CHOICE_PARAMETER_NAME = "//div[contains(text(),'Name of the Choice Parameter')]";
-    private static final By WARNING_MESSAGE = By.className("error");
 
     private JavascriptExecutor javascriptExecutor;
     private SoftAssert asserts;
@@ -57,7 +57,7 @@ public class _PipelineTest extends BaseTest {
     private void createPipeline(String name, boolean buttonOk) {
         ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
         getDriver().findElement(By.id("name")).sendKeys(name);
-        ProjectUtils.NewItemTypes.Pipeline.click(getDriver());
+        ProjectUtils.ProjectType.Pipeline.click(getDriver());
         if (buttonOk) {
             ProjectUtils.clickOKButton(getDriver());
         }
@@ -72,7 +72,7 @@ public class _PipelineTest extends BaseTest {
     }
 
     private void homePageClick() {
-        getDriver().findElement(LINK_JENKINS_HOMEPAGE).click();
+        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
     }
 
     private WebElement $(String locator) {
@@ -104,7 +104,7 @@ public class _PipelineTest extends BaseTest {
     }
 
     private void cleanAllPipelines() {
-        getDriver().findElement(LINK_JENKINS_HOMEPAGE).click();
+        homePageClick();
         ProjectUtils.Dashboard.Main.ManageJenkins.click(getDriver());
         getDriver().findElement(By.xpath("//a[@href='script']")).click();
         getActions().moveToElement(getDriver().findElement(
@@ -170,7 +170,7 @@ public class _PipelineTest extends BaseTest {
             if (buttonOk) {
                 ProjectUtils.clickOKButton(getDriver());
             }
-            click(LINK_JENKINS_HOMEPAGE);
+            homePageClick();
         }
     }
 
@@ -210,11 +210,15 @@ public class _PipelineTest extends BaseTest {
                 By.xpath("//tr[@id='job_" + pipelineName + "']//a[contains(@class,'jenkins-table__link')]"));
     }
 
+    private WebElement buttonScheduledBuildInDashboard(String pipelineName) {
+        return getDriver().findElement(By.xpath(String.format("//span[text()='Schedule a Build for %s']", pipelineName)));
+    }
+
     @Test
     public void testCheckValidationItemName() {
         final String name = pipelineName();
+
         createPipeline(name, Boolean.TRUE);
-        ProjectUtils.clickSaveButton(getDriver());
         getDriver().findElement(By.xpath("//li//a[@href='/']")).click();
         createPipeline(name, Boolean.FALSE);
         String errorMessage = getDriver().findElement(By.id("itemname-invalid")).getText();
@@ -230,7 +234,7 @@ public class _PipelineTest extends BaseTest {
     public void testCheckDropDownMenuPipeline() {
         createPipeline(pipelineName(), Boolean.TRUE);
 
-        js(getDriver().findElement(By.cssSelector(".samples")));
+        js(getDriver().findElement(DROP_DOWN_MENU_PIPELINE_TAB));
 
         List<WebElement> optionsDropDown = getDriver().findElements(
                 By.xpath("//div[1][@class='samples']//select/option"));
@@ -487,7 +491,7 @@ public class _PipelineTest extends BaseTest {
     @Test
     public void testBuildPipelineWithParameters() {
 
-        ProjectUtils.createProject(getDriver(), ProjectUtils.NewItemTypes.Pipeline, "First Pipeline Project");
+        ProjectUtils.createProject(getDriver(), ProjectUtils.ProjectType.Pipeline, "First Pipeline Project");
 
         getDriver().findElement(By
                 .xpath("//label[contains(text(),'This project is parameterized')]")).click();
@@ -536,7 +540,7 @@ public class _PipelineTest extends BaseTest {
                     .xpath("//div[@id='buildHistory']/div[1]/div/a")).click();
         }
 
-        WebElement buildOne = getWait5()
+        WebElement buildOne = getWait20()
                 .until(ExpectedConditions.elementToBeClickable(
                         By.xpath("//a[text()='#1']//ancestor::tr")));
         buildOne.click();
@@ -554,7 +558,6 @@ public class _PipelineTest extends BaseTest {
                 .getText(), "Description of parameter");
         asserts.assertAll();
     }
-
 
     @Test
     public void testPipelineBuildNow() {
@@ -607,7 +610,7 @@ public class _PipelineTest extends BaseTest {
         final String name = pipelineName();
 
         createPipeline(name, Boolean.TRUE);
-        click(SUBMIT_BUTTON, LINK_JENKINS_HOMEPAGE);
+        click(SUBMIT_BUTTON, By.id("jenkins-name-icon"));
 
         createNewView();
         getWait20().until(ExpectedConditions.visibilityOfElementLocated(
@@ -801,12 +804,12 @@ public class _PipelineTest extends BaseTest {
     }
 
     @Test
-    public void testCheckIcon() {
+    public void testCheckPositiveBuildIcon() {
         final String name = pipelineName();
 
         createPipeline(name, Boolean.TRUE);
         new Select($(".samples select")).selectByValue("hello");
-        $("[type='submit']").click();
+        ProjectUtils.clickSaveButton(getDriver());
         homePageClick();
         $x(String.format("//span[contains(text(), '%s')]/following-sibling::*[name()='svg']", name)).click();
 
@@ -816,5 +819,36 @@ public class _PipelineTest extends BaseTest {
 
         Assert.assertTrue(getWait20().until(ExpectedConditions.attributeToBe(
                 By.cssSelector(".tobsTable-body .job"), "class", "job SUCCESS")));
+    }
+
+    @Test
+    public void testCheckScheduledBuildInBuildHistory() {
+        final String name = pipelineName();
+
+        List<String> expectedBuildHistory = Arrays.asList(name, name);
+
+        createPipeline(name, Boolean.TRUE);
+        scrollPageDown();
+
+        getActions().moveToElement(getDriver().findElement(DROP_DOWN_MENU_PIPELINE_TAB))
+                .click()
+                .sendKeys(Keys.ARROW_DOWN)
+                .click()
+                .perform();
+        ProjectUtils.clickSaveButton(getDriver());
+        homePageClick();
+
+        js(buttonScheduledBuildInDashboard(name));
+        getActions().moveToElement(buttonScheduledBuildInDashboard(name))
+                .doubleClick()
+                .perform();
+        ProjectUtils.Dashboard.Main.BuildHistory.click(getDriver());
+
+        List<String> actualBuildHistory = getTextFromListWebElements(getDriver().findElements(By.xpath(
+                String.format("//a[@href='/job/%s/' and @class='jenkins-table__link model-link inside']", name))));
+        for (int i = 0; i < actualBuildHistory.size(); i++) {
+
+            Assert.assertEquals(actualBuildHistory.get(i),expectedBuildHistory.get(i));
+        }
     }
 }

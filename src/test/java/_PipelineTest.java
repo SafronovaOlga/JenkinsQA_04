@@ -1,3 +1,4 @@
+import model.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static runner.ProjectUtils.ProjectType.Pipeline;
+@Ignore
 public class _PipelineTest extends BaseTest {
     private static final By SUBMIT_BUTTON = By.cssSelector("[type='submit']");
     private static final By APPLY_BUTTON = By.xpath("//button[contains(text(), 'Apply')]");
@@ -57,7 +60,7 @@ public class _PipelineTest extends BaseTest {
     private void createPipeline(String name, boolean buttonOk) {
         ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
         getDriver().findElement(By.id("name")).sendKeys(name);
-        ProjectUtils.ProjectType.Pipeline.click(getDriver());
+        Pipeline.click(getDriver());
         if (buttonOk) {
             ProjectUtils.clickOKButton(getDriver());
         }
@@ -488,10 +491,11 @@ public class _PipelineTest extends BaseTest {
         Assert.assertEquals(errorMessage.getText(), expectedMessage + " is an unsafe character");
     }
 
+    @Ignore
     @Test
     public void testBuildPipelineWithParameters() {
 
-        ProjectUtils.createProject(getDriver(), ProjectUtils.ProjectType.Pipeline, "First Pipeline Project");
+        ProjectUtils.createProject(getDriver(), Pipeline, "First Pipeline Project");
 
         getDriver().findElement(By
                 .xpath("//label[contains(text(),'This project is parameterized')]")).click();
@@ -793,8 +797,7 @@ public class _PipelineTest extends BaseTest {
 
             Assert.assertEquals(getDriver().findElement(
                     By.xpath("//div[@id='main-panel']/h1")).getText(), "Error");
-            Assert.assertEquals(getDriver().findElement(
-                            By.xpath("//div[@id='main-panel']/p")).getText(),
+            Assert.assertEquals(getDriver().findElement(          By.xpath("//div[@id='main-panel']/p")).getText(),
                     String.format("‘%s’ is an unsafe character", str));
 
             getDriver().navigate().back();
@@ -807,9 +810,14 @@ public class _PipelineTest extends BaseTest {
     public void testCheckPositiveBuildIcon() {
         final String name = pipelineName();
 
-        createPipeline(name, Boolean.TRUE);
-        new Select($(".samples select")).selectByValue("hello");
-        ProjectUtils.clickSaveButton(getDriver());
+        new HomePage(getDriver())
+                .clickNewItem()
+                .setProjectName(name)
+                .setProjectType(Pipeline)
+                .createAndGoToPipelineConfigure()
+                .selectScriptByValue("hello")
+                .saveConfigAndGoToProject();
+
         homePageClick();
         $x(String.format("//span[contains(text(), '%s')]/following-sibling::*[name()='svg']", name)).click();
 
@@ -821,6 +829,7 @@ public class _PipelineTest extends BaseTest {
                 By.cssSelector(".tobsTable-body .job"), "class", "job SUCCESS")));
     }
 
+    @Ignore
     @Test
     public void testCheckScheduledBuildInBuildHistory() {
         final String name = pipelineName();
@@ -831,10 +840,7 @@ public class _PipelineTest extends BaseTest {
         scrollPageDown();
 
         getActions().moveToElement(getDriver().findElement(DROP_DOWN_MENU_PIPELINE_TAB))
-                .click()
-                .sendKeys(Keys.ARROW_DOWN)
-                .click()
-                .perform();
+                .click().sendKeys(Keys.ARROW_DOWN).click().build().perform();
         ProjectUtils.clickSaveButton(getDriver());
         homePageClick();
 

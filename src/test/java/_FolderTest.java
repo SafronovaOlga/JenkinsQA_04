@@ -111,11 +111,15 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testConfigurePage() {
 
-        createFolderWithoutSaveButton(NAME_FOLDER);
-        getWait5().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.id("jenkins")));
+        String actual = new HomePage(getDriver())
+                .clickNewItem()
+                .setProjectName(NAME_FOLDER)
+                .setProjectType(Folder)
+                .createAndGoToFolderConfigure()
+                .waitLoadingFolderConfigurePage()
+                .getGeneralTabName();
 
-        Assert.assertEquals(getDriver().findElement(
-                By.xpath("//div[@class='jenkins-config-widgets']//div[text()='General']")).getText(), "General");
+        Assert.assertEquals(actual, "General");
     }
 
     @Test(dependsOnMethods = {"testConfigurePage"})

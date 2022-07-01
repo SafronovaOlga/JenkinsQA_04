@@ -19,11 +19,14 @@ import static runner.ProjectUtils.ProjectType.Folder;
 public class _FolderTest extends BaseTest {
 
     private static final String NAME_FOLDER = "Configure";
+    private static final String RANDOM_FOLDER_NAME = TestUtils.getRandomStr();
 
     private static final char[] INVALID_SYMBOLS =
             {92, ':', ';', '/', '!', '@', '#', '$', '%', '^', '[', ']', '&', '*', '<', '>', '?', '|'};
     protected static final char[] CHARS =
             {',', 39, '`', '~', '-', ' ', '(', ')', '{', '}', '+', '=', '_', '"'};
+
+    private static final String RANDOM_NAME = TestUtils.getRandomStr(10);
 
     private static final By NAME = By.id("name");
     private static final By SUBMIT_BUTTON = By.xpath("//button[@type='submit']");
@@ -97,17 +100,15 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testCreateFolder() {
 
-        final String folderName = TestUtils.getRandomStr(10);
-
-        String projectName = new HomePage(getDriver())
+        String folderName = new HomePage(getDriver())
                 .clickNewItem()
-                .setProjectName(folderName)
+                .setProjectName(RANDOM_FOLDER_NAME)
                 .setProjectType(Folder)
                 .createAndGoToConfig()
                 .saveConfigAndGoToProject()
                 .getFolderName();
 
-        Assert.assertEquals(projectName, folderName);
+        Assert.assertEquals(folderName, RANDOM_FOLDER_NAME);
     }
 
     @Test
@@ -293,7 +294,7 @@ public class _FolderTest extends BaseTest {
         Assert.assertTrue(getDriver().findElement(By.id("notification-bar")).getAttribute("class").contains("notif-alert-show"));
     }
 
-    @Test
+    @Test(dependsOnMethods = {"testCreateFolder"})
     public void testRenameFolderPositive() {
 
         final String folderName = TestUtils.getRandomStr();

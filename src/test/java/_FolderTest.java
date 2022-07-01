@@ -1,3 +1,4 @@
+import model.FolderConfigPage;
 import model.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -41,11 +42,12 @@ public class _FolderTest extends BaseTest {
     }
 
     private static void createFolder(WebDriver driver, String folderName) {
-        ProjectUtils.Dashboard.Main.NewItem.click(driver);
-        driver.findElement(NAME).sendKeys(folderName);
-        Folder.click(driver);
-        ProjectUtils.clickOKButton(driver);
-        driver.findElement(SUBMIT_BUTTON).click();
+        new HomePage(driver)
+                .clickNewItem()
+                .setProjectName(folderName)
+                .setProjectType(Folder)
+                .createAndGoToConfig()
+                .saveConfigAndGoToProject();
     }
 
     private boolean isFolderPresent(String name) {
@@ -293,15 +295,16 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testRenameFolderPositive() {
 
-        final String randomFolderName = TestUtils.getRandomStr();
         final String newRandomFolderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(),randomFolderName);
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-        clickMenuRenameFolder(randomFolderName);
-        setNewFolderName(newRandomFolderName);
+        createFolder(getDriver(), RANDOM_NAME);
 
-        Assert.assertEquals(getDriver().findElement(By.xpath("//h1")).getText(),newRandomFolderName);
+        String actualResult = new FolderConfigPage(getDriver())
+                .clickRenameFolder()
+                .renameFolder(newRandomFolderName)
+                .getFolderName();
+
+        Assert.assertEquals(actualResult, newRandomFolderName);
     }
 
     @Test
@@ -310,7 +313,7 @@ public class _FolderTest extends BaseTest {
         final String unsafeCharacters = "&.!@#$%^*/|\\:?";
         final String folderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(),folderName);
+        createFolder(getDriver(), folderName);
         ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
         clickMenuRenameFolder(folderName);
 
@@ -344,7 +347,7 @@ public class _FolderTest extends BaseTest {
         final String newFolderName = " ";
         final String[] expectedResult = new String[]{"Error", "No name is specified"};
 
-        createFolder(getDriver(),folderName);
+        createFolder(getDriver(), folderName);
         ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
         clickMenuRenameFolder(folderName);
         setNewFolderName(newFolderName);

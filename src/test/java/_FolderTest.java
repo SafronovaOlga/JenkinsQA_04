@@ -25,8 +25,6 @@ public class _FolderTest extends BaseTest {
     protected static final char[] CHARS =
             {',', 39, '`', '~', '-', ' ', '(', ')', '{', '}', '+', '=', '_', '"'};
 
-    private static final String RANDOM_NAME = TestUtils.getRandomStr(10);
-
     private static final By NAME = By.id("name");
     private static final By SUBMIT_BUTTON = By.xpath("//button[@type='submit']");
     private static final String WARNING_TEXT_WITH_DOT = "» “.” is not an allowed name";
@@ -98,15 +96,18 @@ public class _FolderTest extends BaseTest {
 
     @Test
     public void testCreateFolder() {
+
+        final String folderName = TestUtils.getRandomStr(10);
+
         String projectName = new HomePage(getDriver())
                 .clickNewItem()
-                .setProjectName(RANDOM_NAME)
+                .setProjectName(folderName)
                 .setProjectType(Folder)
                 .createAndGoToConfig()
                 .saveConfigAndGoToProject()
                 .getFolderName();
 
-        Assert.assertEquals(projectName, RANDOM_NAME);
+        Assert.assertEquals(projectName, folderName);
     }
 
     @Test
@@ -295,9 +296,10 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testRenameFolderPositive() {
 
+        final String folderName = TestUtils.getRandomStr();
         final String newRandomFolderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(), RANDOM_NAME);
+        createFolder(getDriver(), folderName);
 
         String actualResult = new FolderConfigPage(getDriver())
                 .clickRenameFolder()

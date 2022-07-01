@@ -297,10 +297,9 @@ public class _FolderTest extends BaseTest {
     @Test(dependsOnMethods = {"testCreateFolder"})
     public void testRenameFolderPositive() {
 
-        final String folderName = TestUtils.getRandomStr();
         final String newRandomFolderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(), folderName);
+        new HomePage(getDriver()).clickName(RANDOM_FOLDER_NAME);
 
         String actualResult = new FolderConfigPage(getDriver())
                 .clickRenameFolder()
@@ -343,29 +342,23 @@ public class _FolderTest extends BaseTest {
         }
     }
 
-    @Test
+    @Test(dependsOnMethods = {"testCreateFolder"})
     public void testRenameFolderWithSpaceAsAName() {
 
-        final String folderName = TestUtils.getRandomStr();
-        final String newFolderName = " ";
         final String[] expectedResult = new String[]{"Error", "No name is specified"};
 
-        createFolder(getDriver(), folderName);
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-        clickMenuRenameFolder(folderName);
-        setNewFolderName(newFolderName);
+        new HomePage(getDriver()).clickName(RANDOM_FOLDER_NAME);
+
+        new FolderConfigPage(getDriver())
+                .clickRenameFolder()
+                .renameFolder(" ");
 
         String[] actualResult = new String[]{
                 getDriver().findElement(By.xpath("//h1")).getText(),
                 getDriver().findElement(By.xpath("//div[@id='main-panel']/p")).getText()
         };
 
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-
-        SoftAssert asserts = new SoftAssert();
-        asserts.assertEquals(expectedResult, actualResult);
-        asserts.assertTrue(getDriver().findElement(By.xpath("//a[@href='job/" + folderName + "/']")).isDisplayed());
-        asserts.assertAll();
+        Assert.assertEquals(actualResult, expectedResult);
     }
 
     @Test

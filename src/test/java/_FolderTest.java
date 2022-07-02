@@ -1,3 +1,4 @@
+import model.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -5,16 +6,18 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.TestException;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import runner.BaseTest;
 import runner.ProjectUtils;
 import runner.TestUtils;
 
 import java.util.List;
 
+import static runner.ProjectUtils.ProjectType.Folder;
+
 public class _FolderTest extends BaseTest {
 
     private static final String NAME_FOLDER = "Configure";
+    private static final String RANDOM_FOLDER_NAME = TestUtils.getRandomStr();
 
     private static final char[] INVALID_SYMBOLS =
             {92, ':', ';', '/', '!', '@', '#', '$', '%', '^', '[', ']', '&', '*', '<', '>', '?', '|'};
@@ -31,16 +34,17 @@ public class _FolderTest extends BaseTest {
     private void createFolderWithoutSaveButton(String folderName) {
         ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
         getDriver().findElement(NAME).sendKeys(folderName);
-        ProjectUtils.ProjectType.Folder.click(getDriver());
+        Folder.click(getDriver());
         ProjectUtils.clickOKButton(getDriver());
     }
 
     private static void createFolder(WebDriver driver, String folderName) {
-        ProjectUtils.Dashboard.Main.NewItem.click(driver);
-        driver.findElement(NAME).sendKeys(folderName);
-        ProjectUtils.ProjectType.Folder.click(driver);
-        ProjectUtils.clickOKButton(driver);
-        driver.findElement(SUBMIT_BUTTON).click();
+        new HomePage(driver)
+                .clickNewItem()
+                .setProjectName(folderName)
+                .setProjectType(Folder)
+                .createAndGoToConfig()
+                .saveConfigAndGoToProject();
     }
 
     private boolean isFolderPresent(String name) {
@@ -87,6 +91,20 @@ public class _FolderTest extends BaseTest {
     private String checkErrorMessage() {
 
         return getDriver().findElement(By.xpath("//div[@id='main-panel']//p")).getText();
+    }
+
+    @Test
+    public void testCreateFolder() {
+
+        String folderName = new HomePage(getDriver())
+                .clickNewItem()
+                .setProjectName(RANDOM_FOLDER_NAME)
+                .setProjectType(Folder)
+                .createAndGoToFolderConfigPage()
+                .saveConfigAndGoToFolderPage()
+                .getFolderName();
+
+        Assert.assertEquals(folderName, RANDOM_FOLDER_NAME);
     }
 
     @Test
@@ -191,7 +209,7 @@ public class _FolderTest extends BaseTest {
         for (int i = 0; i < symbols.length(); i++) {
             String s = String.valueOf(symbols.charAt(i));
             TestUtils.clearAndSend(getDriver(), NAME, s);
-            ProjectUtils.ProjectType.Folder.click(getDriver());
+            Folder.click(getDriver());
 
             String expectedResult = "";
             if (s.equals(".")) {
@@ -210,7 +228,7 @@ public class _FolderTest extends BaseTest {
         ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
 
         getDriver().findElement(NAME).sendKeys("TestFolder@Jenkins");
-        ProjectUtils.ProjectType.Folder.click(getDriver());
+        Folder.click(getDriver());
 
         Assert.assertEquals(getDriver().findElement(By.id("itemname-invalid")).getText(),
                 "» ‘@’ is an unsafe character");
@@ -232,7 +250,7 @@ public class _FolderTest extends BaseTest {
         ProjectUtils.Dashboard.Main.NewItem.click(getDriver());
 
         getDriver().findElement(NAME).sendKeys(nameFolder);
-        ProjectUtils.ProjectType.Folder.click(getDriver());
+        Folder.click(getDriver());
 
         Assert.assertEquals(getWait20()
                 .until(ExpectedConditions.presenceOfElementLocated(By.id("itemname-invalid"))).getText(), "» " + expectedErrorMessage);
@@ -272,18 +290,18 @@ public class _FolderTest extends BaseTest {
         Assert.assertTrue(getDriver().findElement(By.id("notification-bar")).getAttribute("class").contains("notif-alert-show"));
     }
 
-    @Test
+    @Test(dependsOnMethods = {"testCreateFolder"})
     public void testRenameFolderPositive() {
 
-        final String randomFolderName = TestUtils.getRandomStr();
         final String newRandomFolderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(),randomFolderName);
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-        clickMenuRenameFolder(randomFolderName);
-        setNewFolderName(newRandomFolderName);
+        String actualResult = new HomePage(getDriver())
+                .clickFolderName(RANDOM_FOLDER_NAME)
+                .clickRenameFolder()
+                .renameFolder(newRandomFolderName)
+                .getFolderName();
 
-        Assert.assertEquals(getDriver().findElement(By.xpath("//h1")).getText(),newRandomFolderName);
+        Assert.assertEquals(actualResult, newRandomFolderName);
     }
 
     @Test
@@ -292,7 +310,7 @@ public class _FolderTest extends BaseTest {
         final String unsafeCharacters = "&.!@#$%^*/|\\:?";
         final String folderName = TestUtils.getRandomStr();
 
-        createFolder(getDriver(),folderName);
+        createFolder(getDriver(), folderName);
         ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
         clickMenuRenameFolder(folderName);
 
@@ -322,26 +340,19 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testRenameFolderWithSpaceAsAName() {
 
-        final String folderName = TestUtils.getRandomStr();
-        final String newFolderName = " ";
-        final String[] expectedResult = new String[]{"Error", "No name is specified"};
+        final String expectedResult = "Error";
 
-        createFolder(getDriver(),folderName);
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-        clickMenuRenameFolder(folderName);
-        setNewFolderName(newFolderName);
+        String actualResult = new HomePage(getDriver())
+                .clickNewItem()
+                .setProjectName(RANDOM_FOLDER_NAME)
+                .setProjectType(Folder)
+                .createAndGoToFolderConfigPage()
+                .saveConfigAndGoToFolderPage()
+                .clickRenameFolder()
+                .renameFolderWithError(" ")
+                .errorMessage();
 
-        String[] actualResult = new String[]{
-                getDriver().findElement(By.xpath("//h1")).getText(),
-                getDriver().findElement(By.xpath("//div[@id='main-panel']/p")).getText()
-        };
-
-        ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-
-        SoftAssert asserts = new SoftAssert();
-        asserts.assertEquals(expectedResult, actualResult);
-        asserts.assertTrue(getDriver().findElement(By.xpath("//a[@href='job/" + folderName + "/']")).isDisplayed());
-        asserts.assertAll();
+        Assert.assertEquals(actualResult, expectedResult);
     }
 
     @Test

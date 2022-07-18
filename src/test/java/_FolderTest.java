@@ -13,14 +13,7 @@ public class _FolderTest extends BaseTest {
     private static final String RANDOM_FOLDER_NAME1 = TestUtils.getRandomStr();
     private static final String RANDOM_FOLDER_NAME2 = TestUtils.getRandomStr();
     private static final String FOLDER_NAME_FOR_RENAME1 = TestUtils.getRandomStr();
-
-
-    protected static final char[] CHARS =
-            {',', 39, '`', '~', '-', ' ', '(', ')', '{', '}', '+', '=', '_', '"'};
-
     private static final String WARNING_TEXT_UNSAFE = "’ is an unsafe character";
-
-    Random random = new Random();
 
     @Test
     public void testCreateFolder() {
@@ -52,9 +45,9 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testCycleCreateFolderWithInvalidData() {
 
-        final char[] invalidSymbols = {92, ':', ';', '/', '!', '@', '#', '$', '%', '^', '[', ']', '&', '*', '<', '>', '?', '|'};
+        final char[] invalidSymbols = {':', ';', '/', '!', '@', '#', '$', '%', '^', '[', ']', '&', '*', '<', '>', '?', '|'};
 
-        int result = random.nextInt(invalidSymbols.length);
+        int result = new Random().nextInt(invalidSymbols.length);
 
         String actualResult = new HomePage(getDriver())
                 .clickNewItem()
@@ -82,13 +75,9 @@ public class _FolderTest extends BaseTest {
     @Test
     public void testCycleTypeAnItemNameWithValidSpecialCharacters() {
 
-        final char[] chars = {',', 39, '`', '~', '-', ' ', '(', ')', '{', '}', '+', '=', '_', '"'};
-
-        int result = random.nextInt(chars.length);
-
         String actualResult = new HomePage(getDriver())
                 .clickNewItem()
-                .setProjectName(Character.toString(chars[result]))
+                .setProjectName(RANDOM_FOLDER_NAME)
                 .setProjectTypeFolder()
                 .getHelpInputText();
 

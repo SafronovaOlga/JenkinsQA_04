@@ -1,4 +1,6 @@
 import model.*;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -57,7 +59,7 @@ public class _FolderTest extends BaseTest {
 
             String actualResult = newItemPage
                     .setProjectName(Character.toString(INVALID_SYMBOLS[i]))
-                    .waitWarningMessage(INVALID_SYMBOLS[i],WARNING_TEXT_UNSAFE)
+                    .waitWarningMessage(INVALID_SYMBOLS[i], WARNING_TEXT_UNSAFE)
                     .getNameErrorText();
 
             Assert.assertEquals(actualResult, expectedResult);
@@ -84,7 +86,7 @@ public class _FolderTest extends BaseTest {
 
         NewItemPage newItemPage = new HomePage(getDriver()).clickNewItem();
 
-        for (char x : CHARS){
+        for (char x : CHARS) {
             String actualResult = newItemPage
                     .setProjectName(Character.toString(x))
                     .getHelpInputText();
@@ -256,5 +258,57 @@ public class _FolderTest extends BaseTest {
                 .getSearchMessageText();
 
         Assert.assertEquals(searchResult, "Nothing seems to match.");
+    }
+
+    @Test
+    public void testAddHealthMetrics() {
+        final String folderName = TestUtils.getRandomStr();
+
+        String actualResult = new HomePage(getDriver())
+                .clickNewItem()
+                .setProjectName(folderName)
+                .setProjectTypeFolder()
+                .clickOkAndGoToConfig()
+                .saveConfigAndGoToFolderPage()
+                .clickConfigure()
+                .clickMetricsButton()
+                .clickAddMetricButton()
+                .clickMetricsItem()
+                .saveConfigAndGoToFolderPage()
+                .clickConfigure()
+                .clickMetricsButton()
+                .getMetricElement()
+                .getText();
+
+        Assert.assertEquals(actualResult, "Child item with worst health");
+    }
+
+    @Test
+    public void testRemoveHealthMetrics() {
+        String folderName = TestUtils.getRandomStr();
+        try {
+            WebElement metric = new HomePage(getDriver())
+                    .clickNewItem()
+                    .setProjectName(folderName)
+                    .setProjectTypeFolder()
+                    .clickOkAndGoToConfig()
+                    .saveConfigAndGoToFolderPage()
+                    .clickConfigure()
+                    .clickMetricsButton()
+                    .clickAddMetricButton()
+                    .clickMetricsItem()
+                    .saveConfigAndGoToFolderPage()
+                    .clickConfigure()
+                    .clickMetricsButton()
+                    .deleteHealthMetric()
+                    .saveConfigAndGoToFolderPage()
+                    .clickConfigure()
+                    .clickMetricsButton()
+                    .getMetricElement();
+            Assert.assertThrows(NoSuchElementException.class, () -> metric.isDisplayed());
+        } finally {
+            new FolderConfigPage(getDriver())
+                    .saveConfigAndGoToFolderPage();
+        }
     }
 }

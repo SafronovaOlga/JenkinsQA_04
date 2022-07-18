@@ -22,15 +22,22 @@ public class FolderPage extends BasePage {
     @FindBy(id = "yui-gen1-button")
     private WebElement yesButton;
 
+    @FindBy(linkText = "Configure")
+    private WebElement configureButton;
+
+
     public FolderPage(WebDriver driver) {
+
         super(driver);
     }
 
     public String getFolderName() {
+
         return folderName.getText();
     }
 
     public String getFolderDescription() {
+
         return folderDescription.getText();
     }
 
@@ -50,5 +57,11 @@ public class FolderPage extends BasePage {
         yesButton.click();
 
         return new HomePage(getDriver());
+    }
+
+    public FolderConfigPage clickConfigure() {
+        configureButton.click();
+
+        return new FolderConfigPage(getDriver());
     }
 }

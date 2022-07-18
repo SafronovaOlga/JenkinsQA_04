@@ -4,7 +4,6 @@ import model.base.BaseHeaderFooterPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import java.util.List;
 
@@ -171,12 +170,6 @@ public class NewItemPage<ConfigPage> extends BaseHeaderFooterPage {
         return breadCrumbs.get(index).getText();
     }
 
-    public NewItemPage<ConfigPage> checkErrorMessage(String extectedMessage) {
-        Assert.assertEquals(errorInvalidName.getText(), extectedMessage);
-
-        return this;
-    }
-
     public String getErrorMessage() {
         return errorInvalidName.getText();
     }
@@ -189,12 +182,6 @@ public class NewItemPage<ConfigPage> extends BaseHeaderFooterPage {
 
     public NewItemPage<ConfigPage> clickToMoveMousePointer() {
         h3Header.click();
-
-        return this;
-    }
-
-    public NewItemPage<ConfigPage> clearNameText() {
-        nameText.clear();
 
         return this;
     }

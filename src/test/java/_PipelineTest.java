@@ -1,16 +1,13 @@
 import model.HomePage;
 import model.PipelineConfigPage;
-import model.ProjectPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import runner.BaseTest;
 import runner.ProjectUtils;
 import runner.TestUtils;
@@ -30,16 +27,13 @@ public class _PipelineTest extends BaseTest {
     private static final By RENAME_BUTTON = By.xpath("//button[text()='Rename']");
     private static final By H1 = By.xpath("//h1");
     private static final By NEW_NAME = By.xpath("//div[@class='setting-main']/input[@name='newName']");
-    private static final By WARNING_MESSAGE = By.className("error");
     private static final String PIPELINE_NAME = TestUtils.getRandomStr(7);
     private final String namePipeline = pipelineName();
     private JavascriptExecutor javascriptExecutor;
-    private SoftAssert asserts;
 
     @BeforeMethod
     public void setUp() {
         javascriptExecutor = (JavascriptExecutor) getDriver();
-        asserts = new SoftAssert();
         getActions();
     }
 
@@ -62,19 +56,6 @@ public class _PipelineTest extends BaseTest {
 
     private void homePageClick() {
         ProjectUtils.Dashboard.Header.Dashboard.click(getDriver());
-    }
-
-    @Deprecated
-    private void createNewPipeline(String pipelineName) {
-        createPipeline(pipelineName, Boolean.TRUE);
-        getDriver().findElement(By.name("description")).sendKeys("Test pipeline");
-        getDriver().findElement(By.id("yui-gen6-button")).click();
-    }
-
-    @Deprecated
-    private void goToPipelinePage(String pipelineName) {
-        getDriver().findElement(By.xpath("//ul[@id='breadcrumbs']//a[@href='/']")).click();
-        getDriver().findElement(By.xpath("//a[@href='job/" + pipelineName + "/']")).click();
     }
 
     private void click(By button) {
@@ -375,7 +356,7 @@ public class _PipelineTest extends BaseTest {
     @Test
     public void testCreatePipelineWithNegativeValueQuietPeriod() {
 
-        String checkForValueErrorMessage = new HomePage(getDriver())
+        final String checkForValueErrorMessage = new HomePage(getDriver())
                 .clickNewItem()
                 .setProjectName(pipelineName())
                 .setProjectTypePipeline()
@@ -433,7 +414,7 @@ public class _PipelineTest extends BaseTest {
     public void testBuildPipelineWithParameters() {
         final String name = pipelineName();
 
-        List<String> checkNameAndDescriptionParametersBuild = new HomePage(getDriver())
+        final List<String> checkNameAndDescriptionParametersBuild = new HomePage(getDriver())
                 .clickNewItem()
                 .setProjectName(name)
                 .setProjectTypePipeline()
@@ -561,21 +542,17 @@ public class _PipelineTest extends BaseTest {
         }
     }
 
-    @Test
+    @Test(dependsOnMethods = "testCreatePipelineAndCheckOnDashboard")
     public void testRenamePipelineTheSameNameWithAllCapitalLetters() {
-        createNewPipeline("General");
-        ProjectUtils.Dashboard.Pipeline.Rename.click(getDriver());
-        TestUtils.clearAndSend(getDriver(), By.xpath("//input[@checkdependson='newName']"), "GENERAL");
-        getDriver().findElement(By.id("main-panel")).click();
 
-        getWait5().until(ExpectedConditions.visibilityOfElementLocated(WARNING_MESSAGE));
+        final String errorText = new HomePage(getDriver())
+                .clickProjectName(PIPELINE_NAME)
+                .clickRenameButton()
+                .setNewProjectName(PIPELINE_NAME.toUpperCase())
+                .clickRenameAndGoToErrorPage()
+                .getErrorMessage();
 
-        String actualWarning = getDriver().findElement(WARNING_MESSAGE).getText();
-        getDriver().findElement(By.id("yui-gen1-button")).click();
-        String actualError = getDriver().findElement(By.xpath("//div[@id='main-panel']/h1")).getText();
-
-        Assert.assertEquals(actualWarning, "The name “GENERAL” is already in use.");
-        Assert.assertEquals(actualError, "Error");
+        Assert.assertEquals(errorText, String.format("The name “%s” is already in use.", PIPELINE_NAME.toUpperCase()));
     }
 
     @Test
@@ -598,7 +575,7 @@ public class _PipelineTest extends BaseTest {
         Assert.assertTrue(getPipelineOnTheDashboard(newPipelineName).isDisplayed());
     }
 
-    @Test(dependsOnMethods = "testCreatePipelineAndCheckOnDashboard")
+    @Test(dependsOnMethods = "testRenamePipelineTheSameNameWithAllCapitalLetters")
     public void testRenamePipelineWithTheSameName() {
 
         final String errorText = new HomePage(getDriver())
@@ -657,7 +634,7 @@ public class _PipelineTest extends BaseTest {
     public void testCheckScheduledBuildInBuildHistory() {
         final String name = pipelineName();
 
-        List<String> checkBuildHistoryByName = new HomePage(getDriver())
+        final List<String> checkBuildHistoryByName = new HomePage(getDriver())
                 .clickNewItem()
                 .setProjectName(name)
                 .setProjectTypePipeline()
@@ -674,44 +651,44 @@ public class _PipelineTest extends BaseTest {
     }
 
     @Test
-    public void testPipelineCheckDiscardOld30builds() throws InterruptedException {
-        ProjectPage projectPage = new ProjectPage(getDriver());
-        List<Integer> expectedBuildNumbers = IntStream.range(2, 32).map(i -> 32 - i + 2 - 1).boxed().collect(Collectors.toList());
+    public void testPipelineCheckDiscardOld30builds() {
 
-        new HomePage(getDriver())
+        final List<Integer> checkingDisplayLast30Builds =  new HomePage(getDriver())
                 .clickNewItem()
                 .setProjectName(namePipeline)
                 .setProjectTypePipeline()
                 .clickOkAndGoToConfig()
-                .clickCheckboxDiscardOldBuilds()
+                .clickCheckBoxDiscardOldBuilds()
                 .saveConfigAndGoToProject()
                 .clickMultipleTimesBuildButton(31)
                 .waitForBuildNumber(31)
-                .refreshPage();
+                .refreshPage()
+                .getNumbersBuildsList();
 
-        Assert.assertEquals(projectPage.getBuildsRowList().size(), 30);
-        Assert.assertEquals(projectPage.getNumbersBuildsList(), expectedBuildNumbers);
+        List<Integer> expectedLast30BuildsNumbers = IntStream.range(2, 32).map(i -> 32 - i + 2 - 1).boxed()
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(checkingDisplayLast30Builds, expectedLast30BuildsNumbers);
     }
 
     @Ignore
     @Test(dependsOnMethods = "testPipelineCheckDiscardOld30builds")
     public void testPipelineCheckDiscardOld3builds() {
-        ProjectPage projectPage = new ProjectPage(getDriver());
-        Integer[] expectedBuildNumbers = {32, 31, 30};
 
-        projectPage
+       final List<Integer> checkingDisplayLast3Builds = new HomePage(getDriver())
                 .clickDashboardButton()
                 .clickMyView()
                 .moveToElement(namePipeline)
-                .selectOptionInMenuSelector("Configure")
-                .fillDiscardOldItems("3", "1")
+                .clickMenuSelector()
+                .clickInMenuSelectorConfigure()
+                .enteringParametersToDisplayLatestBuilds("3", "1")
                 .saveConfigAndGoToProject()
                 .clickBuildButton()
                 .waitForBuildNumber(32)
-                .refreshPage();
+                .refreshPage()
+                .getNumbersBuildsList();
 
-        Assert.assertEquals(projectPage.getBuildsRowList().size(), 3);
-        Assert.assertEquals(projectPage.getNumbersBuildsList(), Arrays.asList(expectedBuildNumbers));
+        Assert.assertEquals(checkingDisplayLast3Builds, List.of(32, 31, 30));
     }
 
     @Test

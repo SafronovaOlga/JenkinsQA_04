@@ -9,12 +9,17 @@ import java.util.Random;
 
 public class _FolderTest extends BaseTest {
 
-    private static final String NAME_FOLDER = TestUtils.getRandomStr();
+    private static final String RANDOM_FOLDER_NAME = TestUtils.getRandomStr();
     private static final String RANDOM_FOLDER_NAME1 = TestUtils.getRandomStr();
-    private static final String FOLDER_NAME_FOR_RENAME1 = TestUtils.getRandomStr();
     private static final String RANDOM_FOLDER_NAME2 = TestUtils.getRandomStr();
+    private static final String FOLDER_NAME_FOR_RENAME1 = TestUtils.getRandomStr();
+
+
+    protected static final char[] CHARS =
+            {',', 39, '`', '~', '-', ' ', '(', ')', '{', '}', '+', '=', '_', '"'};
+
     private static final String WARNING_TEXT_UNSAFE = "’ is an unsafe character";
-    
+
     Random random = new Random();
 
     @Test
@@ -36,10 +41,10 @@ public class _FolderTest extends BaseTest {
 
         Boolean folderIsPresent = new HomePage(getDriver())
                 .clickNewItem()
-                .setProjectName(NAME_FOLDER)
+                .setProjectName(RANDOM_FOLDER_NAME)
                 .setProjectTypeFolder()
                 .clickOkAndGoToConfig()
-                .goHome().checkProjectNameNotPresent(NAME_FOLDER);
+                .goHome().checkProjectNameNotPresent(RANDOM_FOLDER_NAME);
 
         Assert.assertFalse(folderIsPresent);
     }
@@ -251,5 +256,23 @@ public class _FolderTest extends BaseTest {
                 .getSearchMessageText();
 
         Assert.assertEquals(searchResult, "Nothing seems to match.");
+    }
+
+    @Test(dependsOnMethods = "testFolderIsCreatedWithoutSave")
+    public void testCreateJobInsideFolder() {
+        final String randomJobName = TestUtils.getRandomStr();
+
+        String actualResult = new HomePage(getDriver())
+                .clickFolderName(RANDOM_FOLDER_NAME)
+                .createJobInsideFolder()
+                .setProjectName(randomJobName)
+                .setProjectTypeFolder()
+                .clickOkAndGoToConfig()
+                .saveConfigAndGoToFolderPage()
+                .clickDashboardButton()
+                .clickFolderName(RANDOM_FOLDER_NAME)
+                .getJobName();
+
+        Assert.assertEquals(actualResult, randomJobName);
     }
 }

@@ -273,6 +273,7 @@ public class _PipelineTest extends BaseTest {
         Assert.assertTrue(titleConfigPage.contains(name));
     }
 
+    @Ignore
     @Test
     public void test404PageAfterDeletedPipeline() {
         final String name = pipelineName();

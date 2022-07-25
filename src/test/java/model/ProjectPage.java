@@ -61,14 +61,9 @@ public class ProjectPage extends BaseProjectDeleteWithoutConfirmPage {
     }
 
     public RenamePage<ProjectPage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new ProjectPage(getDriver()));
-    }
-
-    @Override
-    public String getProjectName() {
-        return projectName.getText().substring("Project ".length());
     }
 
     public boolean isProjectStatus(String value) {
@@ -89,13 +84,13 @@ public class ProjectPage extends BaseProjectDeleteWithoutConfirmPage {
         return this;
     }
 
-    public ProjectPage clickAddDescription() {
+    public ProjectPage clickAddDescription_() {
         addDescription.click();
 
         return this;
     }
 
-    public ProjectPage addTextDescriptionAndSave(String textDescription) {
+    public ProjectPage addTextDescriptionAndSave_(String textDescription) {
         addTextDescription.sendKeys(textDescription);
         saveDescriptionButton.click();
 
@@ -209,7 +204,7 @@ public class ProjectPage extends BaseProjectDeleteWithoutConfirmPage {
     }
 
     public String getPipelineProjectName() {
-        return projectName.getText().substring("Pipeline ".length());
+        return getProjectName().substring("Pipeline ".length());
     }
 
     public String getBuildName() {
@@ -217,6 +212,6 @@ public class ProjectPage extends BaseProjectDeleteWithoutConfirmPage {
     }
 
     public String getBuildDescription() {
-        return  buildDescription.getText();
+        return buildDescription.getText();
     }
 }

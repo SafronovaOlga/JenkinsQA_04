@@ -36,7 +36,7 @@ public class MultiConfigurationProjectPage extends BaseProjectDeleteWithoutConfi
     }
 
     public RenamePage<MultiConfigurationProjectPage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new MultiConfigurationProjectPage(getDriver()));
     }
@@ -57,7 +57,7 @@ public class MultiConfigurationProjectPage extends BaseProjectDeleteWithoutConfi
         return new MultiConfigurationProjectConsolePage(getDriver());
     }
 
-    public MultiConfigurationProjectPage clickAddDescription() {
+    public MultiConfigurationProjectPage clickAddDescription_() {
         addOrEditDescriptionButton.click();
 
         return this;
@@ -98,8 +98,7 @@ public class MultiConfigurationProjectPage extends BaseProjectDeleteWithoutConfi
         return isBuildNowDisplayed;
     }
 
-    @Override
-    public String getProjectName() {
-        return projectName.getText().substring("Project ".length());
+    public String getMultiConfigurationProjectName() {
+        return getProjectName().substring("Project ".length());
     }
 }

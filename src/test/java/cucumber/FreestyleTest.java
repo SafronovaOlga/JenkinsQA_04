@@ -102,7 +102,7 @@ public class FreestyleTest {
 
     @Then("Freestyle project name is {string}")
     public void assertFreestyleProjectName(String projectName) {
-        Assert.assertEquals(freestylePage.getProjectName(), projectName);
+        Assert.assertEquals(freestylePage.getFreestyleProjectName(), projectName);
     }
 
     @Then("Folder project name is {string}")

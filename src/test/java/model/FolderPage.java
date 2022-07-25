@@ -35,7 +35,7 @@ public class FolderPage extends BaseProjectDeleteWithConfirmPage {
     }
 
     public RenamePage<FolderPage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new FolderPage(getDriver()));
     }
@@ -56,8 +56,8 @@ public class FolderPage extends BaseProjectDeleteWithConfirmPage {
         return jobName.getText();
     }
 
-    public FolderConfigPage clickConfigure(){
-        clickConfigureButton();
+    public FolderConfigPage clickConfigureFolder(){
+        clickConfigure();
 
         return new FolderConfigPage(getDriver());
     }

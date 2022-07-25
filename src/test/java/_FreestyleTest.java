@@ -22,7 +22,7 @@ public class _FreestyleTest extends BaseTest {
                 .setProjectTypeFreestyle()
                 .clickOkAndGoToConfig()
                 .saveConfigAndGoToFreestyleProject()
-                .getProjectName();
+                .getFreestyleProjectName();
 
         Assert.assertEquals(projectName, RANDOM_NAME);
     }
@@ -33,7 +33,7 @@ public class _FreestyleTest extends BaseTest {
                 .clickFreestyleName(RANDOM_NAME)
                 .clickFreestyleConfigure()
                 .saveConfigAndGoToFreestyleProject()
-                .getProjectName();
+                .getFreestyleProjectName();
 
         Assert.assertEquals(projectName, RANDOM_NAME);
     }
@@ -116,7 +116,7 @@ public class _FreestyleTest extends BaseTest {
                 .clickRenameAndGoToRenamePage()
                 .setNewProjectName(EDITED_RANDOM_NAME)
                 .clickRenameAndGoToProjectPage()
-                .getProjectName();
+                .getFreestyleProjectName();
 
         Assert.assertEquals(projectName, EDITED_RANDOM_NAME);
     }
@@ -128,7 +128,7 @@ public class _FreestyleTest extends BaseTest {
                 .clickRenameAndGoToRenamePage()
                 .setNewProjectName(NAME_WITH_SPECIAL_CHARACTERS)
                 .clickRenameAndGoToProjectPage()
-                .getProjectName();
+                .getFreestyleProjectName();
 
         Assert.assertEquals(projectName, NAME_WITH_SPECIAL_CHARACTERS);
     }

@@ -27,13 +27,13 @@ public class MultibranchPipelinePage extends BaseProjectDeleteWithConfirmPage {
     }
 
     public RenamePage<MultibranchPipelinePage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new MultibranchPipelinePage(getDriver()));
     }
 
     public MultibranchPipelineConfigPage clickConfigureProject() {
-        clickConfigureButton();
+        clickConfigure();
 
         return new MultibranchPipelineConfigPage(getDriver());
     }

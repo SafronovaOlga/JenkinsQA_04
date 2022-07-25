@@ -18,7 +18,7 @@ public class _MultiConfigurationProjectTest extends BaseTest {
                 .setProjectTypeMultiConfiguration()
                 .clickOkAndGoToConfig()
                 .saveConfigAndGoToProject()
-                .getProjectName();
+                .getMultiConfigurationProjectName();
 
         Assert.assertEquals(projectName, RANDOM_NAME);
     }
@@ -88,7 +88,7 @@ public class _MultiConfigurationProjectTest extends BaseTest {
     public void testAddDescription() {
         String description = new HomePage(getDriver())
                 .clickMultiConfigurationProjectName(RANDOM_NAME)
-                .clickAddDescription()
+                .clickAddDescription_()
                 .setDescription(DESCRIPTION_TEXT)
                 .saveConfigAndGoToMultiConfigurationProject()
                 .getDescription();
@@ -103,7 +103,7 @@ public class _MultiConfigurationProjectTest extends BaseTest {
                 .clickRenameAndGoToRenamePage()
                 .setNewProjectName(EDITED_RANDOM_NAME)
                 .clickRenameAndGoToProjectPage()
-                .getProjectName();
+                .getMultiConfigurationProjectName();
 
         Assert.assertEquals(newProjectName, EDITED_RANDOM_NAME);
     }

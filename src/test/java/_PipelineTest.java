@@ -587,8 +587,8 @@ public class _PipelineTest extends BaseTest {
                 .setProjectTypePipeline()
                 .clickOkAndGoToConfig()
                 .saveConfigAndGoToProject()
-                .clickAddDescription()
-                .addTextDescriptionAndSave(name)
+                .clickAddDescription_()
+                .addTextDescriptionAndSave_(name)
                 .clearUserDescription()
                 .checkDescriptionValue();
 

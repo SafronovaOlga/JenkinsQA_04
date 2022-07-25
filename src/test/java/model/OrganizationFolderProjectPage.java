@@ -18,13 +18,12 @@ public class OrganizationFolderProjectPage extends BaseProjectDeleteWithConfirmP
         super(driver);
     }
 
-    @Override
-    public String getProjectName() {
-        return projectName.getText().trim();
+    public String getProjectName_() {
+        return getProjectName().trim();
     }
 
     public RenamePage<OrganizationFolderProjectPage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new OrganizationFolderProjectPage(getDriver()));
     }

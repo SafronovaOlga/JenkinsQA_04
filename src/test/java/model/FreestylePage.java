@@ -26,19 +26,18 @@ public class FreestylePage extends BaseProjectDeleteWithoutConfirmPage {
         super(driver);
     }
 
-    @Override
-    public String getProjectName() {
-        return projectName.getText().substring("Project ".length());
+    public String getFreestyleProjectName() {
+        return getProjectName().substring("Project ".length());
     }
 
     public RenamePage<FreestylePage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new FreestylePage(getDriver()));
     }
 
     public FreestyleConfigPage clickFreestyleConfigure() {
-        clickConfigureButton();
+        clickConfigure();
 
         return new FreestyleConfigPage(getDriver());
     }

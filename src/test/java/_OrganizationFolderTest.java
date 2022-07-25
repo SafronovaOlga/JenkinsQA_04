@@ -25,7 +25,7 @@ public class _OrganizationFolderTest extends BaseTest {
                 .setProjectTypeOrganizationFolder()
                 .clickOkAndGoToConfig()
                 .saveConfigAndGoToProject()
-                .getProjectName();
+                .getProjectName_();
 
         Assert.assertEquals(projectName, VALID_FOLDER_NAME);
     }
@@ -37,7 +37,7 @@ public class _OrganizationFolderTest extends BaseTest {
                 .clickRenameAndGoToRenamePage()
                 .setNewProjectName(VALID_FOLDER_RENAME)
                 .clickRenameAndGoToProjectPage()
-                .getProjectName();
+                .getProjectName_();
 
         Assert.assertEquals(projectName, VALID_FOLDER_RENAME);
     }

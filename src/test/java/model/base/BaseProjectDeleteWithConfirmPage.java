@@ -10,7 +10,7 @@ public class BaseProjectDeleteWithConfirmPage extends BaseProjectPage{
     }
 
     public DeleteProjectPage clickDeleteProject() {
-        deleteButton.click();
+        clickDelete();
 
         return new DeleteProjectPage(getDriver());
     }

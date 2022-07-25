@@ -10,7 +10,7 @@ public class PipelinePage extends BaseProjectDeleteWithoutConfirmPage {
     }
 
     public RenamePage<PipelinePage> clickRenameAndGoToRenamePage() {
-        clickRenameButton();
+        clickRename();
 
         return new RenamePage<>(getDriver(), new PipelinePage(getDriver()));
     }

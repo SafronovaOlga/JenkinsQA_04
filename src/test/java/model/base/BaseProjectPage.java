@@ -10,27 +10,75 @@ public abstract class BaseProjectPage extends BaseDashboardPage{
         super(driver);
     }
 
-    @FindBy(linkText = "Rename")
-    private WebElement renameButton;
-
     @FindBy(css = "h1")
-    protected WebElement projectName;
+    private WebElement projectName;
 
     @FindBy(linkText = "Configure")
-    private WebElement configureButton;
+    private WebElement configure;
 
     @FindBy(css = ".icon-edit-delete")
-    protected WebElement deleteButton;
+    private WebElement delete;
 
-    public void clickRenameButton() {
-        renameButton.click();
-    }
+    @FindBy(linkText = "Rename")
+    private WebElement rename;
 
-    public void clickConfigureButton() {
-        configureButton.click();
-    }
+    @FindBy(id = "description-link")
+    private WebElement addOrEditDescriptionButton;
+
+    @FindBy(xpath = "//textarea[@name='description']")
+    private WebElement textFieldDescription;
+
+    @FindBy(id = "yui-gen2-button")
+    private WebElement saveDescriptionButton;
+
+    @FindBy(id = "yui-gen1-button")
+    private WebElement disableOrEnableButton;
 
     public String getProjectName() {
         return projectName.getText();
+    }
+
+    public String getDisableOrEnableButton() {
+        return disableOrEnableButton.getText();
+    }
+
+    public void clickConfigure() {
+        configure.click();
+    }
+
+    public void clickDelete() {
+        delete.click();
+    }
+
+    public void clickRename() {
+        rename.click();
+    }
+
+    public void clickAddOrEditDescriptionButton() {
+        addOrEditDescriptionButton.click();
+    }
+
+    public void clickTextFieldDescription() {
+        textFieldDescription.click();
+    }
+
+    public void clickSaveDescriptionButton() {
+        saveDescriptionButton.click();
+    }
+
+    public void clickDisableOrEnableButton() {
+        disableOrEnableButton.click();
+    }
+
+    public void addTextDescriptionAndSave(String textDescription) {
+        clickAddOrEditDescriptionButton();
+        textFieldDescription.sendKeys(textDescription);
+        clickSaveDescriptionButton();
+    }
+
+    public void clearTextDescription() {
+        clickAddOrEditDescriptionButton();
+        textFieldDescription.clear();
+        clickSaveDescriptionButton();
     }
 }

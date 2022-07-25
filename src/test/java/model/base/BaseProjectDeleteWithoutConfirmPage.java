@@ -10,7 +10,7 @@ public class BaseProjectDeleteWithoutConfirmPage extends BaseProjectPage{
     }
 
     public HomePage clickDeleteProjectAndConfirm() {
-        deleteButton.click();
+        clickDelete();
         getDriver().switchTo().alert().accept();
 
         return new HomePage(getDriver());

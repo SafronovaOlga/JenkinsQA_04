@@ -52,6 +52,12 @@ public class ManageJenkinsPage extends BaseDashboardPage {
     @FindBy(xpath = "//h2[text() = 'Security']/ancestor::section//dt")
     private List<WebElement> securityContent;
 
+    @FindBy(xpath = "//h2[text() = 'System Configuration']/ancestor::section//dd")
+    private List<WebElement> systemConfCaprions;
+
+    @FindBy(xpath = "//i[@class='fa fa-bell']")
+    private WebElement updateBellIcon;
+
     public ManageJenkinsPage(WebDriver driver) {
         super(driver);
     }
@@ -150,5 +156,24 @@ public class ManageJenkinsPage extends BaseDashboardPage {
         }
 
         return textSection;
+    }
+
+    public List<String> getCaptionsSystemSysConf(){
+        List<String> captions = new ArrayList<>();
+        for (WebElement element : systemConfCaprions){
+            if (element.getText().isEmpty()){
+
+            }
+            else captions.add(element.getText());
+        }
+
+        return captions;
+    }
+
+    public boolean updateBellIconIsDisplayed(){
+        if (updateBellIcon.isDisplayed()){
+            return true;
+        }
+        else return false;
     }
 }

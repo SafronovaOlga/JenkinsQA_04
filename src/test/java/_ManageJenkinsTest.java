@@ -1,4 +1,5 @@
 import model.HomePage;
+import model.ManageJenkinsPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import runner.BaseTest;
@@ -66,5 +67,31 @@ public class _ManageJenkinsTest extends BaseTest {
                 .getActualSecurityContent();
 
         Assert.assertEquals(actualSecurityContent, expectedSecurityContent);
+    }
+
+    @Test
+    public void testCaptionsSystemConfiguration(){
+       List<String> expectedCaptions = List.of(
+               "Configure global settings and paths.",
+               "Configure tools, their locations and automatic installers.",
+               "Add, remove, disable or enable plugins that can extend the functionality of Jenkins.",
+               "There are updates available",
+               "Add, remove, control and monitor the various nodes that Jenkins runs jobs on.",
+               "Installs Jenkins as a Windows service to this system, so that Jenkins starts automatically when the machine boots.");
+
+       List<String> actualCaptions = new HomePage(getDriver())
+               .clickManageJenkins()
+               .getCaptionsSystemSysConf();
+
+       if (new ManageJenkinsPage(getDriver()).updateBellIconIsDisplayed()){
+           Assert.assertEquals(expectedCaptions, actualCaptions);
+       }
+       else {
+           expectedCaptions.remove(3);
+           Assert.assertEquals(expectedCaptions, actualCaptions);
+       }
+
+
+
     }
 }

@@ -83,15 +83,7 @@ public class _ManageJenkinsTest extends BaseTest {
                .clickManageJenkins()
                .getCaptionsSystemSysConf();
 
-       if (new ManageJenkinsPage(getDriver()).updateBellIconIsDisplayed()){
-           Assert.assertEquals(expectedCaptions, actualCaptions);
-       }
-       else {
-           expectedCaptions.remove(3);
-           Assert.assertEquals(expectedCaptions, actualCaptions);
+       Assert.assertEquals(expectedCaptions, actualCaptions);
        }
 
-
-
-    }
 }
